@@ -3,7 +3,6 @@
 		"ParameterKey": "PublicSubnet1",
 		"ParameterValue": "10.0.1.0/24"
 	},
-	
 	{
 		"ParameterKey": "AvailabilityZoneA",
 		"ParameterValue": "us-east-2a"
