@@ -6,7 +6,7 @@
 # Hardik Chalke - chalke.h@husky.neu.edu
 #
 #
-## Prerequisites for building and deploying application locally
+# Prerequisites for building and deploying locally
 #
 ### 1.Software Requirements: Intellij / Eclipse, MY SQL, Postman
 #
@@ -30,7 +30,8 @@
 ### 7. Expected result: {Data: Current Time: <current time will be displayed>, Response Code: OK}
 #
 #  
-## Steps to Run Integration Tests
+# Steps to Run Integration Tests
+#
 ### Run UserLoginApplicationTests,java from Intellij / Eclipse IDE
 ### Both the test cases should pass
 
