@@ -5,10 +5,12 @@
 # Shreyas Kalyanaraman - kalyanaraman.s@husky.neu.edu
 # Hardik Chalke - chalke.h@husky.neu.edu
 
-# Prerequisites for building and deploying application locally
-## 1.Software Requirements: Intellij / Eclipse, MY SQL, Postman
+## Prerequisites for building and deploying application locally
+
+### 1.Software Requirements: Intellij / Eclipse, MY SQL, Postman
 
 # Build and Deploy instructions for Web Application:
+
 
 ## Step 1: Setting up the environment
 ### 1. Create a connection with username as 'root' and password as 'admin' 
@@ -17,7 +19,8 @@
 ### 4. Build the project and Run the application from intellij / eclipse
 ### 5. Tomcat server should start on port 8080
 
-### Step2: Using the application
+
+## Step2: Using the application
 ### 1. Open Postman
 ### 2. Enter localhost:8080/ in the URL section. Keep method as GET and hit 'Send' button
 ### 3. Expected result: {Data: You are not logged in, Response code: NOT_FOUND}
