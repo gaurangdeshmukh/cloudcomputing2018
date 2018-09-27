@@ -120,6 +120,7 @@
       "Type" : "AWS::EC2::Subnet",
       "Properties" : {
          "VpcId" : { "Ref" : "myVPC" },
+         "MapPublicIpOnLaunch": false,
          "CidrBlock" : {"Ref":"PrivateSubnet1"},
          "AvailabilityZone" : {"Ref":"AvailabilityZoneA"}
       }
@@ -129,6 +130,7 @@
     "Type" : "AWS::EC2::Subnet",
     "Properties" : {
        "VpcId" : { "Ref" : "myVPC" },
+       "MapPublicIpOnLaunch": false,
        "CidrBlock" : {"Ref":"PrivateSubnet2"},
        "AvailabilityZone" : {"Ref":"AvailabilityZoneB"}
     }
@@ -138,6 +140,7 @@
   "Type" : "AWS::EC2::Subnet",
   "Properties" : {
      "VpcId" : { "Ref" : "myVPC" },
+     "MapPublicIpOnLaunch": false,
      "CidrBlock" : {"Ref":"PrivateSubnet3"},
      "AvailabilityZone" : {"Ref":"AvailabilityZoneC"}
   }

@@ -34,4 +34,3 @@
 #
 ### Run UserLoginApplicationTests,java from Intellij / Eclipse IDE
 ### Both the test cases should pass
-
