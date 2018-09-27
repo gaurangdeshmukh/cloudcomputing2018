@@ -120,6 +120,7 @@
       "Type" : "AWS::EC2::Subnet",
       "Properties" : {
          "VpcId" : { "Ref" : "myVPC" },
+         "MapPublicIpOnLaunch": false,
          "CidrBlock" : {"Ref":"PrivateSubnet1"},
          "AvailabilityZone" : {"Ref":"AvailabilityZoneA"}
       }
@@ -129,6 +130,7 @@
     "Type" : "AWS::EC2::Subnet",
     "Properties" : {
        "VpcId" : { "Ref" : "myVPC" },
+       "MapPublicIpOnLaunch": false,
        "CidrBlock" : {"Ref":"PrivateSubnet2"},
        "AvailabilityZone" : {"Ref":"AvailabilityZoneB"}
     }
@@ -138,6 +140,7 @@
   "Type" : "AWS::EC2::Subnet",
   "Properties" : {
      "VpcId" : { "Ref" : "myVPC" },
+     "MapPublicIpOnLaunch": false,
      "CidrBlock" : {"Ref":"PrivateSubnet3"},
      "AvailabilityZone" : {"Ref":"AvailabilityZoneC"}
   }
@@ -201,32 +204,7 @@
                "SubnetId" : { "Ref" : "Subnet3" },
                "RouteTableId" : { "Ref" : "PublicRouteTable" }
             }
-         },
-   
-
-        "myPvtSubnetRouteTableAssociation1" : {
-          "Type" : "AWS::EC2::SubnetRouteTableAssociation",
-          "Properties" : {
-            "SubnetId" : { "Ref" : "PrivateSubnetA" },
-            "RouteTableId" : { "Ref" : "PrivateRouteTable" }
-          }
-   },
-
-      "myPvtSubnetRouteTableAssociation2" : {
-        "Type" : "AWS::EC2::SubnetRouteTableAssociation",
-        "Properties" : {
-          "SubnetId" : { "Ref" : "PrivateSubnetB" },
-          "RouteTableId" : { "Ref" : "PrivateRouteTable" }
-        }
-   },
-
-      "myPvtSubnetRouteTableAssociation3" : {
-        "Type" : "AWS::EC2::SubnetRouteTableAssociation",
-        "Properties" : {
-          "SubnetId" : { "Ref" : "PrivateSubnetC" },
-          "RouteTableId" : { "Ref" : "PrivateRouteTable" } 
-        }
-   }
+         }
 
 }
 }
