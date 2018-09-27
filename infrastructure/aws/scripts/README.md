@@ -2,7 +2,7 @@
 ----------------------------------------------------------------------------------------------------
 # SYNOPSIS
     Automates the creation of a custom IPv4 VPC, having public subnet, Internet
-    gateway aTtached to VPC and Route tables using Shell Scripting
+    gateway attached to VPC and Route tables using Shell Scripting
 
 # DESCRIPTION
     This shell script leverages the AWS Command Line Interface (AWS CLI) to
