@@ -20,7 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = UserLoginApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UserLoginApplicationTests {
 
     @LocalServerPort
@@ -36,7 +36,7 @@ public class UserLoginApplicationTests {
         HttpEntity<String> entity = new HttpEntity<String>(null,header);
 
         ResponseEntity<String> response = testRest.exchange(
-                createUrlWithPort("/"),
+                createUrlWithPort("/time"),
                 HttpMethod.GET,entity,String.class);
 
         DateFormat df = new SimpleDateFormat("HH:mm");
@@ -51,10 +51,10 @@ public class UserLoginApplicationTests {
     public void testLoginFailed() throws JSONException{
         HttpHeaders header = createHeaders("noaccountexits@gmail.com","abcd1234");
 
-        HttpEntity<String> entity = new HttpEntity<String>(null,header);
+        HttpEntity<String> entity = new HttpEntity<String>(null,null);//header);
 
         ResponseEntity<String> response = testRest.exchange(
-                createUrlWithPort("/"),
+                createUrlWithPort("/time"),
                 HttpMethod.GET,entity,String.class);
 
         String expectedString = "{\"Data\":\"You are not logged in\",\"Response Code\":\"NOT_FOUND\"}";
