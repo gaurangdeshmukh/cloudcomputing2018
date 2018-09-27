@@ -21,12 +21,7 @@ public class ActionController {
     @Autowired
     UserService userService;
 
-    @RequestMapping(value="/test",method=RequestMethod.GET)
-    public String testClas(){
-        return "Hello World";
-    }
-
-    @RequestMapping(value="/", method = RequestMethod.GET)
+    @RequestMapping(value="/time", method = RequestMethod.GET)
     public Map<String,Object> authAndLogin(@RequestHeader(value="Authorization", defaultValue = "NoValueFound")String auth){
 
         if(auth.isEmpty() || auth == null || auth.equals("NoValueFound")){
@@ -50,7 +45,7 @@ public class ActionController {
 
     }
 
-    @RequestMapping(value="/register",method=RequestMethod.POST)
+    @RequestMapping(value="/user/register",method=RequestMethod.POST)
     public Map<String,Object> register(@RequestHeader(value="Authorization")String auth){
 
         String []userCredentials = getUserCredentials(auth);
