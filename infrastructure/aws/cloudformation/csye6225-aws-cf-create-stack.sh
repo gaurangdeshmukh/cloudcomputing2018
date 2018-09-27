@@ -27,7 +27,7 @@ echo Creating Stack.....
 Create=$(aws cloudformation create-stack --stack-name $StackName --template-body file://csye6225-cf-networking.json --parameters file://ParameterFile.json)
 
 #====================================================================================================
-# Waiting for the stack to get terminated completely
+# Waiting for the stack to get created completely
 #====================================================================================================
 
 echo Stack in progress.....
