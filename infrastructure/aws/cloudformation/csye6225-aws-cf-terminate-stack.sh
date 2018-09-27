@@ -32,7 +32,7 @@ else
 fi
 
 #====================================================================================================
-# Waiting for the stack to get created completely
+# Waiting for the stack to get terminated completely
 #====================================================================================================
 
 Success=$(aws cloudformation wait stack-delete-complete --stack-name $StackName)
