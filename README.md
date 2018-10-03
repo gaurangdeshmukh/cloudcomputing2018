@@ -39,8 +39,7 @@
 * Expected result: {Current Time: <current time will be displayed>}. Response Code - 200:OK
 
 **Note: All the below steps require username and password to be passed in Header for authenticating the user**
-
-#### Creating, Updating, Deleting and getting back all transactions
+#### Creating, Updating, Deleting and get all transactions
 * Enter localhost:8080/transact/ in the URL section. Keep method as GET and hit 'Send' button
 * Expected result: []. Error code - 200:OK
 ##### Creating transaction
@@ -48,7 +47,7 @@
 * Select body tab. Select 'raw' radio button and change text to JSON(application/json)
 * In the input box below, enter any json file according to below format 
 {
-	"description": "Coffee",
+    "description": "Coffee",
     "merchant": "Startbucks",
     "amount": 5.00,
     "date": "08/12/2018",
@@ -71,12 +70,12 @@
 * Response code: 200:OK
 
 ##### Update transaction
-* Enter localhost:8080/transact/update/<transaction id> in the URL section. Keep method as PUT. 
+* Enter localhost:8080/transact/update/'transaction id' in the URL section. Keep method as PUT. 
   For eg: 8080/transact/update/$2a$04$9S1YyzCM4NRiMDqaV8s9ZeoNe6eCEV3Rn1-THLTqJeSKX02cicjN2  
 * Select body tab. Select 'raw' radio button and change text to JSON(application/json)
 * In the input box below, enter any json file according to below format 
 {
-	"description": "Hashbrowns",
+    "description": "Hashbrowns",
     "merchant": "Dunkin",
     "amount": 3.00,
     "date": "08/12/2018",
@@ -85,16 +84,16 @@
 * Press 'Send' button
 * Expected response: 201:Created
 {
-  "id":"$2a$04$9S1YyzCM4NRiMDqaV8s9ZeoNe6eCEV3Rn1-THLTqJeSKX02cicjN2"
-	"description": "Hashbrowns",
-    "merchant": "Dunkin",
-    "amount": 3.00,
-    "date": "08/12/2018",
-    "category": "food"
+   "id":"$2a$04$9S1YyzCM4NRiMDqaV8s9ZeoNe6eCEV3Rn1-THLTqJeSKX02cicjN2"
+   "description": "Hashbrowns",
+   "merchant": "Dunkin",
+   "amount": 3.00,
+   "date": "08/12/2018",
+   "category": "food"
 }
 
 ##### Deleting a transaction
-* Enter localhost:8080/transact/delete/<transaction id> in the URL section. Keep method as DELETE. 
+* Enter localhost:8080/transact/delete/'transaction id' in the URL section. Keep method as DELETE. 
   For eg: 8080/transact/delete/$2a$04$9S1YyzCM4NRiMDqaV8s9ZeoNe6eCEV3Rn1-THLTqJeSKX02cicjN2
 * Press 'Send' button
 * Expected response: 204:No Content
