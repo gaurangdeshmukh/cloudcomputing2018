@@ -17,7 +17,7 @@
 ## Build and Deploy instructions for Web Application:
 
 ### Step 1: Setting up the environment
-* Create a connection with username as 'root' and password as <your mariadb password> 
+* Create a connection with username as 'root' and password as **your mariadb password**
 * Create database with name 'user_cloud' in your mysql workbench 
 * Import the WebApp folder in Itellij / Eclipse IDE
 * Select maven as default build
@@ -30,13 +30,13 @@
 * Open Postman
 
 #### Creating account and viewing current time
-* Enter localhost:8080/ in the URL section. Keep method as GET and hit 'Send' button
+* Enter localhost:8080/time in the URL section. Keep method as GET and hit 'Send' button
 * Expected result: {Respone: You are not logged in}. Error code - 401:Unauthorized
 * Select BasicAuth from Authorization tab. Enter username and password in the input box
-* Enter localhost:8080/register in the URL section. Change the method to POST and hit 'Send' button
+* Enter localhost:8080/user/register in the URL section. Change the method to POST and hit 'Send' button
 * Expected result: {Response: Your account has been registered}. Response Code - 200:Success
-* Enter localhost:8080/. Change method to GET and hit 'Send' button
-* Expected result: {Current Time: <current time will be displayed>}. Response Code - 200:OK
+* Enter localhost:8080/time. Change method to GET and hit 'Send' button
+* Expected result: {Current Time: **current time will be displayed**}. Response Code - 200:OK
 
 **Note: All the below steps require username and password to be passed in Header for authenticating the user**
 #### Creating, Updating, Deleting and get all transactions
@@ -60,7 +60,7 @@
 * Enter localhost:8080/transact/ in the URL section. Keep method as GET and hit 'Send' button
 * Expected Result (dummy value):
 {
-  "id":"$2a$04$9S1YyzCM4NRiMDqaV8s9ZeoNe6eCEV3Rn1-THLTqJeSKX02cicjN2"
+  "uuid":"$2a$04$9S1YyzCM4NRiMDqaV8s9ZeoNe6eCEV3Rn1-THLTqJeSKX02cicjN2"
   "description": "Coffee",
   "merchant": "Startbucks",
   "amount": 5.00,
@@ -70,7 +70,7 @@
 * Response code: 200:OK
 
 ##### Update transaction
-* Enter localhost:8080/transact/update/'transaction id' in the URL section. Keep method as PUT. 
+* Enter localhost:8080/transact/update/**UUID** in the URL section. Keep method as PUT. 
   For eg: 8080/transact/update/$2a$04$9S1YyzCM4NRiMDqaV8s9ZeoNe6eCEV3Rn1-THLTqJeSKX02cicjN2  
 * Select body tab. Select 'raw' radio button and change text to JSON(application/json)
 * In the input box below, enter any json file according to below format 
@@ -84,7 +84,7 @@
 * Press 'Send' button
 * Expected response: 201:Created
 {
-   "id":"$2a$04$9S1YyzCM4NRiMDqaV8s9ZeoNe6eCEV3Rn1-THLTqJeSKX02cicjN2"
+   "uuid":"$2a$04$9S1YyzCM4NRiMDqaV8s9ZeoNe6eCEV3Rn1-THLTqJeSKX02cicjN2"
    "description": "Hashbrowns",
    "merchant": "Dunkin",
    "amount": 3.00,
@@ -93,7 +93,7 @@
 }
 
 ##### Deleting a transaction
-* Enter localhost:8080/transact/delete/'transaction id' in the URL section. Keep method as DELETE. 
+* Enter localhost:8080/transact/delete/**UUID** in the URL section. Keep method as DELETE. 
   For eg: 8080/transact/delete/$2a$04$9S1YyzCM4NRiMDqaV8s9ZeoNe6eCEV3Rn1-THLTqJeSKX02cicjN2
 * Press 'Send' button
 * Expected response: 204:No Content
