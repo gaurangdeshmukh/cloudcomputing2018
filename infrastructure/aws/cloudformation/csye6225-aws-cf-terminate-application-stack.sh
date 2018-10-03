@@ -1,8 +1,9 @@
+#!/bin/bash
 #====================================================================================================
-# Synopsis: This script is used to terminate Custom VPC having Route-Table, Internet Gateway 
-# and Subnet in CloudFormation Stack
+# Synopsis: This script is used to delete the stack consisting of CentOS ec2 instances with security
+#  group and Route 53 in CloudFormation
 #====================================================================================================
-#Displaying the stacks
+# Checking which stacks needs to be deleted
 #====================================================================================================
 
 StackList=$(aws cloudformation list-stacks --stack-status-filter CREATE_COMPLETE UPDATE_IN_PROGRESS CREATE_IN_PROGRESS --query 'StackSummaries[].StackName' --output text )
@@ -16,9 +17,8 @@ else
   read StackName
   echo "Deleting the stack $StackName"
 fi
-
 #====================================================================================================
-#Termination of the stack using Parameter File
+# Deleting the stack
 #====================================================================================================
 
 Delete=$(aws cloudformation delete-stack --stack-name $StackName)
@@ -30,9 +30,8 @@ then
 else
   echo "Deletion in Progress....."
 fi
-
 #====================================================================================================
-# Waiting for the stack to get terminated completely
+# Waiting till the stacks gets deleted
 #====================================================================================================
 
 Success=$(aws cloudformation wait stack-delete-complete --stack-name $StackName)
