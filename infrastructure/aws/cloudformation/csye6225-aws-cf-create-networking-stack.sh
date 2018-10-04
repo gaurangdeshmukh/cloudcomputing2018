@@ -10,7 +10,7 @@ read StackName
 #====================================================================================================
 #Validating the CloudFormation Template
 #====================================================================================================
-Valid=$(aws cloudformation  validate-template --template-body file://networking.json)
+Valid=$(aws cloudformation  validate-template --template-body file://csye6225-cf-networking.json)
 if [ $? -ne "0" ]
 then
   echo $Valid
