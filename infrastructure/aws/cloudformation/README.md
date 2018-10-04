@@ -40,7 +40,7 @@
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 
-1. This file contains the creation of EC2 instance along with the security groups (Security Group for Web Servers and Security Group for DB Servers) thta is used to setup application resources. 
+1. This file contains the creation of EC2 instance along with the security groups (Security Group for Web Servers and Security Group for DB Servers) that is used to setup application resources. 
 
 # Steps to create automated script to create application stack
 
