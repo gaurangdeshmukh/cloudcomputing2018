@@ -1,0 +1,176 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "AWS CloudFormation Sample Template EC2Instance With SecurityGroup",
+    "Parameters": {
+        "KeyName": {
+            "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
+            "Type": "AWS::EC2::KeyPair::KeyName",
+            "ConstraintDescription": "Existing or Newly created EC2 KeyPair"
+        },
+        "InstanceType": {
+            "Description": "EC2 instance type.",
+            "Type": "String",
+            "Default": "t2.micro"
+        },
+
+        "VPC": {
+            "Description": "EC2 instance type.",
+            "Type": "String"
+        },
+
+        "SSHLocation": {
+            "Description": "The IP address range that can be used to SSH to the EC2 instances",
+            "Type": "String",
+            "MinLength": "9",
+            "MaxLength": "18",
+            "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+            "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x."
+        },
+        "SubnetId": {
+            "Description": "SubnetId in VPC",
+            "Type": "String"
+        },
+
+        "HostedZone" : {
+            "Type" : "String",
+            "Description" : "The DNS name of an existing Amazon Route 53 hosted zone",
+            "AllowedPattern" : "(?!-)[a-zA-Z0-9-.]{1,63}(?<!-)",
+            "ConstraintDescription" : "must be a valid DNS zone name."
+          }
+        
+    },
+    "Mappings": {
+        "AWSInstanceType2Arch": {
+            "t2.micro": {
+                "Arch": "HVM64"
+            }
+        },
+        "AWSRegionArch2AMI": {
+            "us-east-1": {
+                "HVM64": "ami-9887c6e7"
+            }
+        }
+    },
+    "Resources": {
+        "EC2Instance": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "ImageId": {
+                    "Fn::FindInMap": [
+                        "AWSRegionArch2AMI",
+                        {
+                            "Ref": "AWS::Region"
+                        },
+                        {
+                            "Fn::FindInMap": [
+                                "AWSInstanceType2Arch",
+                                {
+                                    "Ref": "InstanceType"
+                                },
+                                "Arch"
+                            ]
+                        }
+                    ]
+                },
+                "InstanceType": {
+                    "Ref": "InstanceType"
+                },
+                "BlockDeviceMappings": [
+                    {
+                    "DeviceName" : "/dev/sda1",
+                    "Ebs": {
+                            "VolumeSize": "20",
+                            "DeleteOnTermination": "false",
+                            "VolumeType": "gp2"
+                        }
+                    }],
+                "KeyName": {
+                    "Ref": "KeyName"
+                },
+                "NetworkInterfaces": [
+                    {
+                        "AssociatePublicIpAddress": "true",
+                        "DeviceIndex": "0",
+                        "GroupSet": [{"Ref": "SecurityGroupBySG"}],
+                        "SubnetId": {"Ref": "SubnetId"}
+                    }
+                ],
+                "Tags": [
+                    {
+                      "Key": "Name",
+                      "Value": {
+                        "Fn::Join": ["",[{"Ref": "AWS::StackName"},"-csye6225-ec2"]]
+                      }
+                    }
+                ]
+            }
+        },
+
+        "MyDNSRecord" : {
+            "Type" : "AWS::Route53::RecordSet",
+            "Properties" : {
+              "HostedZoneName" : { "Fn::Join" : [ "", [{"Ref" : "HostedZone"}, "." ]]},
+              "Comment" : "DNS name for my instance.",
+              "Name" : { "Fn::Join" : [ "", [{"Ref" : "EC2Instance"}, ".", {"Ref" : "AWS::Region"}, ".", {"Ref" : "HostedZone"} ,"."]]},
+              "Type" : "TXT",
+              "TTL" : "60",
+              "ResourceRecords" : ["\"csye-6225-fall2018\""]
+            }
+        },
+
+        "SecurityGroupBySG" : {
+            "Type" : "AWS::EC2::SecurityGroup",
+            "Properties" : {
+                "GroupDescription" : "allow connections from specified source security group",
+                "VpcId" : {"Ref" : "VPC"},
+                "SecurityGroupIngress" : [
+                    {
+                       "IpProtocol" : "tcp",
+                       "FromPort" : "22",
+                       "ToPort" : "22",
+                       "CidrIp" : { "Ref" : "SSHLocation"}
+                    },
+                    { "IpProtocol" : "tcp", 
+                     "FromPort" : "80",
+                     "ToPort" : "80", 
+                     "CidrIp" : { "Ref" : "SSHLocation"}
+                    },
+                    { "IpProtocol" : "tcp", 
+                        "FromPort" : "443",
+                        "ToPort" : "443", 
+                        "CidrIp" : { "Ref" : "SSHLocation"}
+                    }
+                    
+                ],
+                "Tags": [
+                  {
+                    "Key": "Name",
+                    "Value": {"Fn::Join": ["",[{"Ref": "AWS::StackName"},"-csye6225-webapp"]]}
+                  }
+                ]
+            }
+           },
+
+           "DBSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription" : "allow connections from specified source security group and ec2 Security group",
+                "VpcId" : {"Ref" : "VPC"},
+               "SecurityGroupIngress": [
+                {
+                    "IpProtocol" : "tcp",
+                    "FromPort" : "3306",
+                    "ToPort" : "3306",
+                    "SourceSecurityGroupId" : { "Ref": "SecurityGroupBySG"}
+                 }
+               ],
+               "Tags": [
+                {
+                  "Key": "Name",
+                  "Value": {"Fn::Join": ["",[{"Ref": "AWS::StackName"},"-csye6225-rds"]]}
+                }
+              ]
+            }
+         }
+    }
+}
