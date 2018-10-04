@@ -99,7 +99,7 @@
 * Expected response: 204:No Content
 ----------------------------------------------------------------------------------------------------------------------------------------
 
-### Steps to Run Integration Tests
+### Step 3: Steps to Run Integration Tests
 
 * Run UserLoginApplicationTests,java from Intellij / Eclipse IDE
 * Both the test cases should pass
