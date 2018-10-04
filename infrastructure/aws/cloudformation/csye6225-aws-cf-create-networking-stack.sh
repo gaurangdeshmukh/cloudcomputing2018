@@ -10,7 +10,7 @@ read StackName
 #====================================================================================================
 #Validating the CloudFormation Template
 #====================================================================================================
-Valid=$(aws cloudformation  validate-template --template-body file://networking.json)
+Valid=$(aws cloudformation  validate-template --template-body file://csye6225-cf-networking.json)
 if [ $? -ne "0" ]
 then
   echo $Valid
@@ -24,7 +24,7 @@ fi
 #Creation of the stack using Parameter File
 #====================================================================================================
 echo Creating Stack.....
-Create=$(aws cloudformation create-stack --stack-name $StackName --template-body file://networking.json --parameters file://parameter.json)
+Create=$(aws cloudformation create-stack --stack-name $StackName --template-body file://csye6225-cf-networking.json --parameters file://Parameter.json)
 
 #====================================================================================================
 # Waiting for the stack to get created completely
