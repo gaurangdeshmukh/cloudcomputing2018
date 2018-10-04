@@ -25,7 +25,7 @@
 * Build the project and Run the application from intellij / eclipse
 * Tomcat server should start on port 8080
 
-### Step2: Using the application
+### Step 2: Using the application
 * Start mariadb server. Run systemctl start mariadb.service
 * Open Postman
 
