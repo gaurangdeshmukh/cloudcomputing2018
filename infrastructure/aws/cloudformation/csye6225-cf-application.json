@@ -246,6 +246,17 @@
                 }
               ]
             }
-         }
+         },
+         "Outputs" : {
+            "JDBCConnectionString": {
+              "Description" : "JDBC connection string for the database",
+              "Value" : { "Fn::Join": [ "", [ "jdbc:mysql://",
+                                              { "Fn::GetAtt": [ "myDB", "Endpoint.Address" ] },
+                                              ":",
+                                              { "Fn::GetAtt": [ "myDB", "Endpoint.Port" ] },
+                                              "/",
+                                              { "Ref": "DBName" }]]}
+            }
+          }
     }
 }
