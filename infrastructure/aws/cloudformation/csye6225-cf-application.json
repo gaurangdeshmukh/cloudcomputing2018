@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "AWS CloudFormation Sample Template Ec2instance, DBinstances With SecurityGroup",
+    "Description": "AWS CloudFormation Sample Template EC2Instance With SecurityGroup",
     "Parameters": {
         "KeyName": {
             "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
@@ -14,31 +14,25 @@
         },
 
         "VPC": {
-            "Description": "VPC.",
+            "Description": "EC2 instance type.",
             "Type": "String"
         },
 
         "SSHLocation": {
-            "Description": "The IP address range that can be used to ssh/ https to the EC2 instances",
+            "Description": "The IP address range that can be used to SSH to the EC2 instances",
             "Type": "String",
             "MinLength": "9",
             "MaxLength": "18",
             "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
             "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x."
         },
-
-        "SubnetId": {
-            "Description": "Public SubnetId in VPC ",
-            "Type": "String"
-        },
-
         "SubnetId1": {
-            "Description": "Private SubnetId in RDS instance",
+            "Description": "SubnetId in VPC and RDS instance",
             "Type": "String"
         },
 
         "SubnetId2": {
-            "Description": "Private SubnetId in RDS instance",
+            "Description": "SubnetId in RDS instance",
             "Type": "String"
         },
 
@@ -48,8 +42,7 @@
             "AllowedPattern" : "(?!-)[a-zA-Z0-9-.]{1,63}(?<!-)",
             "ConstraintDescription" : "must be a valid DNS zone name."
           },
-
-        "HashKeyElementName" : {
+          "HashKeyElementName" : {
             "Description" : "HashType PrimaryKey Name",
             "Type" : "String",
             "AllowedPattern" : "[a-zA-Z0-9]*",
@@ -91,66 +84,16 @@
               "Type" : "String"
           },
 
-        "DBUser": {
-            "NoEcho": "true",
-            "Description" : "The database admin account username",
-            "Type": "String",
-            "MinLength": "1",
-            "MaxLength": "16",
-            "AllowedPattern" : "[a-zA-Z][a-zA-Z0-9]*",
-            "ConstraintDescription" : "must begin with a letter and contain only alphanumeric characters."
+          "S3Bucket": {
+            "Description" : "The database instance type",
+            "Type": "String"
           },
-      
-        "DBPassword": {
-            "NoEcho": "true",
-            "Description" : "The database admin account password",
-            "Type": "String",
-            "MinLength": "8",
-            "MaxLength": "41",
-            "AllowedPattern" : "[a-zA-Z0-9]*",
-            "ConstraintDescription" : "must contain only alphanumeric characters."
-          },
-
-        "DBInstanceClass": {
-              "Description" : "The database instance type",
-              "Type": "String",
-              "Default": "db.t2.medium",
-              "AllowedValues" : [ "db.t2.medium"],
-              "ConstraintDescription" : "must select a valid database instance type."
-            },
-
-        "S3Bucket": {
-                "Description" : "The database instance type",
-                "Type": "String"
-              },
-
-        "MultiAZ" : {
-              "Description" : "Multi-AZ master database",
-              "Type" : "String",
-              "Default" : "false",
-              "AllowedValues" : [ "true", "false" ],
-              "ConstraintDescription" : "must be true or false."
-            },
-
         "PubliclyAccessible" : {
               "Description" : "PubliclyAccessible or not",
               "Type" : "String",
-              "Default" : "false",
+              "Default" : "true",
               "AllowedValues" : [ "true", "false" ],
               "ConstraintDescription" : "must be true or false."
-            },
-
-        "DBInstanceIdentifier" : {
-            "Type" : "String"
-            },
-
-        "DBName" : {
-            "Type":"String"
-            },
-
-        "Subnetgroupname":{
-            "Description" : "DB subnet group",
-            "Type" : "String"
             }
         
     },
@@ -166,12 +109,6 @@
             }
         }
     },
-
-    "Conditions" : {
-        "Is-EC2-VPC"     : {"Fn::Equals" : [{"Ref" : "AWS::Region"}, "us-east-1" ]}
-      },
-
-
     "Resources": {
         "EC2Instance": {
             "Type": "AWS::EC2::Instance",
@@ -201,7 +138,7 @@
                     "DeviceName" : "/dev/sda1",
                     "Ebs": {
                             "VolumeSize": "20",
-                            "DeleteOnTermination": "true",
+                            "DeleteOnTermination": "false",
                             "VolumeType": "gp2"
                         }
                     }],
@@ -226,7 +163,6 @@
                 ]
             }
         },
-
         "myDynamoDBTable" : {
             "Type" : "AWS::DynamoDB::Table",
             "Properties" : {
@@ -245,36 +181,6 @@
             }
           },
 
-          "myDB" : {
-            "Type" : "AWS::RDS::DBInstance",
-            "Properties" : {
-              "AllocatedStorage" : "5",
-              "DBInstanceClass" : { "Ref" : "DBInstanceClass" },
-              "DBInstanceIdentifier" : {"Ref" : "DBInstanceIdentifier"},
-              
-              "DBSubnetGroupName" : {"Ref":"myDBSubnetGroup"},
-              "Engine" : "MySQL",
-              "MultiAZ" : { "Ref" : "MultiAZ" },
-              "MasterUsername" : { "Ref" : "DBUser" },
-              "MasterUserPassword" : { "Ref" : "DBPassword" },
-              "PubliclyAccessible" :{ "Ref" : "PubliclyAccessible" },
-              "VPCSecurityGroups": { "Fn::If" : [ "Is-EC2-VPC", [ { "Fn::GetAtt": [ "DBSecurityGroup", "GroupId" ] } ], { "Ref" : "AWS::NoValue"}]},
-              "DBName" : { "Ref" : "DBName" }
-              
-              
-              
-            }
-          },
-          
-          "myDBSubnetGroup" : {
-            "Type" : "AWS::RDS::DBSubnetGroup",
-            "Properties" : {
-               "DBSubnetGroupDescription" : "description",
-               "SubnetIds" : [{"Ref":"SubnetId1"},{"Ref":"SubnetId2"}]
-               
-            }
-         },
-
         "MyDNSRecord" : {
             "Type" : "AWS::Route53::RecordSet",
             "Properties" : {
@@ -286,6 +192,13 @@
               "ResourceRecords" : ["\"csye-6225-fall2018\""]
             }
         },
+
+        "s3bucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "BucketName":  {"Ref" :"S3Bucket"}
+            }
+            },
 
         "SecurityGroupBySG" : {
             "Type" : "AWS::EC2::SecurityGroup",
@@ -320,17 +233,8 @@
             }
            },
 
-           "s3bucket": {
-            "Type": "AWS::S3::Bucket",
-            "Properties": {
-                "BucketName":  {"Ref" :"S3Bucket"}
-            }
-            },
-
-
            "DBSecurityGroup": {
             "Type": "AWS::EC2::SecurityGroup",
-            "Condition" : "Is-EC2-VPC",
             "Properties": {
                 "GroupDescription" : "allow connections from specified source security group and ec2 Security group",
                 "VpcId" : {"Ref" : "VPC"},
@@ -349,18 +253,17 @@
                 }
               ]
             }
-         }
-    },
-
-    "Outputs" : {
-        "JDBCConnectionString": {
-          "Description" : "JDBC connection string for the database",
-          "Value" : { "Fn::Join": [ "", [ "jdbc:mysql://",
-                                          { "Fn::GetAtt": [ "myDB", "Endpoint.Address" ] },
-                                          ":",
-                                          { "Fn::GetAtt": [ "myDB", "Endpoint.Port" ] },
-                                          "/",
-                                          { "Ref": "DBName" }]]}
-        }
-      }
+         },
+         "Outputs" : {
+            "JDBCConnectionString": {
+              "Description" : "JDBC connection string for the database",
+              "Value" : { "Fn::Join": [ "", [ "jdbc:mysql://",
+                                              { "Fn::GetAtt": [ "myDB", "Endpoint.Address" ] },
+                                              ":",
+                                              { "Fn::GetAtt": [ "myDB", "Endpoint.Port" ] },
+                                              "/",
+                                              { "Ref": "DBName" }]]}
+            }
+          }
+    }
 }
