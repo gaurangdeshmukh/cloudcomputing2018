@@ -32,18 +32,47 @@ else
 fi
 
 #====================================================================================================
-# Obtaining Subnet Id
+# Obtaining Public Subnet Id for VPC
 #====================================================================================================
 
-subname1="-csye6225-Pubsubnet1"
+subname="-csye6225-Pubsubnet1"
+
+subname=$sn1$subname
+
+echo "Public Subnet name :"
+echo $subname
+
+echo ""
+
+SubnetId=$(aws ec2 describe-subnets --filters "Name=tag:Name,Values=$subname"  --query 'Subnets[*].SubnetId' --output text 2>&1)
+
+echo "Public Subnet id :"
+echo $SubnetId
+
+
+#====================================================================================================
+# Obtaining Private Subnet Id for RDS Instance
+#====================================================================================================
+subname1="-csye6225-Pvtsubnet1"
 subname1=$sn1$subname1
-echo "Subnet name :"
+
+echo "Private Subnet name :"
 echo $subname1
 echo ""
 
-SubnetId=$(aws ec2 describe-subnets --filters "Name=tag:Name,Values=$subname1"  --query 'Subnets[*].SubnetId' --output text 2>&1)
-echo "Subnet id :"
-echo $SubnetId
+SubnetId1=$(aws ec2 describe-subnets --filters "Name=tag:Name,Values=$subname1"  --query 'Subnets[*].SubnetId' --output text 2>&1)
+echo $SubnetId1
+
+
+subname2="-csye6225-Pvtsubnet2"
+subname2=$sn1$subname2
+
+echo "Private Subnet name :"
+echo $subname2
+echo ""
+
+SubnetId2=$(aws ec2 describe-subnets --filters "Name=tag:Name,Values=$subname2"  --query 'Subnets[*].SubnetId' --output text 2>&1)
+echo $SubnetId2
 
 #====================================================================================================
 # Obtaining Security Group
@@ -99,7 +128,13 @@ echo "Vpc id is: $vpc_Id"
 #Creation of the stack using Parameter File
 #====================================================================================================
 
-create=$(aws cloudformation create-stack --stack-name $sn --template-body file://csye6225-cf-application.json --parameters ParameterKey=KeyName,ParameterValue=$keypair ParameterKey=SubnetId,ParameterValue=$SubnetId ParameterKey=HostedZone,ParameterValue=$HostedZoneName ParameterKey=SSHLocation,ParameterValue=0.0.0.0/0 ParameterKey=VPC,ParameterValue=$vpc_Id)
+create=$(aws cloudformation create-stack --stack-name $sn --template-body file://csye6225-cf-application.json \
+  --parameters ParameterKey=KeyName,ParameterValue=$keypair ParameterKey=SubnetId,ParameterValue=$SubnetId ParameterKey=SubnetId1,ParameterValue=$SubnetId1 ParameterKey=SubnetId2,ParameterValue=$SubnetId2 \
+    ParameterKey=HostedZone,ParameterValue=$HostedZoneName ParameterKey=SSHLocation,ParameterValue=0.0.0.0/0 ParameterKey=VPC,ParameterValue=$vpc_Id \
+    ParameterKey=HashKeyElementName,ParameterValue=id ParameterKey=DBUser,ParameterValue=csye6225master ParameterKey=DBPassword,ParameterValue=csye6225password \
+    ParameterKey=DBInstanceIdentifier,ParameterValue=csye6225-spring2018 ParameterKey=DBName,ParameterValue=csye6225 ParameterKey=Subnetgroupname,ParameterValue=$subname1 \
+    ParameterKey=TableName,ParameterValue=csye6225 ParameterKey=S3Bucket,ParameterValue=$HostedZoneName.csye6225.com)
+
 if [ $? -ne "0" ]
 then
   echo "Creation of $sn stack failed...."
