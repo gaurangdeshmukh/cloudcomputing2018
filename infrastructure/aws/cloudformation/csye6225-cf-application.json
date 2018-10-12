@@ -87,7 +87,14 @@
           "S3Bucket": {
             "Description" : "The database instance type",
             "Type": "String"
-          }
+          },
+        "PubliclyAccessible" : {
+              "Description" : "PubliclyAccessible or not",
+              "Type" : "String",
+              "Default" : "true",
+              "AllowedValues" : [ "true", "false" ],
+              "ConstraintDescription" : "must be true or false."
+            }
         
     },
     "Mappings": {
