@@ -3,6 +3,10 @@ package com.example.rest_api.Entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table
@@ -20,7 +24,12 @@ public class Transactions {
     @JsonIgnore
     private User user;
 
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "transactions")
+    @JsonIgnore
+    private List<Attachments> attachmentsList;
+
     public Transactions() {
+        attachmentsList = new ArrayList<Attachments>();
     }
 
     public Transactions(String transaction_id, String description, String merchant, String amount, String date, String category) {
@@ -30,6 +39,8 @@ public class Transactions {
         this.amount = amount;
         this.date = date;
         this.category = category;
+
+
     }
 
     public String getTransaction_id() {
@@ -87,4 +98,50 @@ public class Transactions {
     public void setUser(User user) {
         this.user = user;
     }
+
+    public List<Attachments> getAttachmentsList() {
+        return attachmentsList;
+    }
+
+    public Attachments addAttachment(Attachments newAttachments){
+        try{
+            attachmentsList.add(newAttachments);
+            return newAttachments;
+        }catch(Exception e){
+            return null;
+        }
+    }
+
+//    public Attachments getAttachment(String previousAttachmentId){
+//        Iterator it = attachmentsList.iterator();
+//        while(it.hasNext()){
+//            Attachments attachments = (Attachments) it.next();
+//            if(attachments.getId().equals(previousAttachmentId)){
+//                return attachments;
+//            }
+//        }
+//        return null;
+//    }
+
+    public boolean deleteAttachment(Attachments deleteAttachment){
+        try{
+            attachmentsList.remove(deleteAttachment);
+            return true;
+        }catch (Exception e){
+            return false;
+        }
+    }
+
+//    public Attachments getPreviousAttachment(String previousAttachmentId){
+//
+//        Iterator it = attachmentsList.iterator();
+//        while(it.hasNext()){
+//            Attachments attachments = (Attachments) it.next();
+//            if(attachments.getId().equals(previousAttachmentId)){
+//                return attachments;
+//            }
+//        }
+//
+//        return null;
+//    }
 }

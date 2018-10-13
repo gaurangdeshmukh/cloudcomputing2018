@@ -9,8 +9,5 @@
         <module name="rest_api" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="rest_api" target="1.8" />
-    </bytecodeTargetLevel>
   </component>
 </project>
