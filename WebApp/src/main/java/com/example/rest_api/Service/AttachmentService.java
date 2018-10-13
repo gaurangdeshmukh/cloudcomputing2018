@@ -81,7 +81,6 @@ public class AttachmentService {
                 Transactions transaction = transactionsDao.findTransactionAttachedToUser(transcation_id, user);
 
                 File file = new File(attachment.getUrl());
-                file = new File(file.getAbsolutePath());
                 String extension = FilenameUtils.getExtension(file.getName());
                 if (!extension.equals("jpeg") && !extension.equals("jpg") && !extension.equals("png")) {
                     return responseService.generateResponse(HttpStatus.UNAUTHORIZED,
@@ -90,15 +89,7 @@ public class AttachmentService {
 
                 String newPath = resourcePath +user.getUsername()+"/"+transaction.getTransaction_id()+"/"+ file.getName();
 
-//                if(new File(newPath).mkdir()){
-//                    System.out.println("coud not cerate directory");
-//                }
-
                 FileUtils.copyFile(file,new File(newPath));
-
-//                if(!file.renameTo(new File(newPath))){
-//                    System.out.println("coud not  write directory");
-//                }
 
                 Attachments attachments = new Attachments();
                 attachments.setUrl(newPath);
@@ -135,12 +126,9 @@ public class AttachmentService {
 
                     if (previousAttachments != null) {
                         File newFile = new File(newAttachment.getUrl());
-                        newFile = new File(newFile.getAbsolutePath());
                         String newPath = resourcePath +user.getUsername()+"/"+transactions.getTransaction_id()+"/"+ newFile.getName();
 
-                        File fileWithNewPath = new File(newPath);
-                        fileWithNewPath = new File(fileWithNewPath.getAbsolutePath());
-                        FileUtils.copyFile(newFile,fileWithNewPath);
+                        FileUtils.copyFile(newFile,new File(newPath));
 
                         File previousFile = new File(previousAttachments.getUrl());
                         if (previousFile.exists()) {
