@@ -97,8 +97,60 @@
   For eg: 8080/transact/delete/$2a$04$9S1YyzCM4NRiMDqaV8s9ZeoNe6eCEV3Rn1-THLTqJeSKX02cicjN2
 * Press 'Send' button
 * Expected response: 204:No Content
-----------------------------------------------------------------------------------------------------------------------------------------
 
+
+#### Attaching a jpeg,png,jpg file to the created transaction
+
+**Note: Attachment can be added either using 'Dev' profile or 'Local' profile. To change the profile, change the value of profile in application.properties file**
+
+##### Getting all the attachments in a transaction
+* Enter localhost:8080/transaction/**transactionId**/attachments/ and keep the method as GET'
+For eg: 8080/transact/2a$04$9S1YyzCM4NRiMDqaV8s9ZeoNe6eCEV3Rn1-THLTqJeSKX02cicjN2/attachments/
+* Press 'Send' button
+* All attachments associated to that transaction should be fetched. Expected Response: 200:OK
+
+##### Adding an attachment to a transaction
+* Enter :8080/transaction/**transactionId**/attachments/ in the URL section. Keep method as 'POST' and hit 'Send' button
+For eg: localhost:8080/transact/2a$04$9S1YyzCM4NRiMDqaV8s9ZeoNe6eCEV3Rn1-THLTqJeSKX02cicjN2/attachments/ 
+* Select body tab. Select 'raw' radio button and change text to JSON(application/json)
+* In the input box below, enter any json file according to below format 
+* {"url":"**Absolute url to the image file**"}
+* Expected Result (dummy value) when in 'Dev' profile:
+{
+  "uuid":"$2a$04$9S1YyzCM4NRiMDqaV8s9ZeoNe6eCEV3Rn1-THLT"
+  "url":"https://s3.amazonaws.com/**BucketName**/filename"
+}
+* Expected Result (dummy value) when in 'Local' profile:
+{
+  "uuid":"$2a$04$9S1YyzCM4NRiMDqaV8s9ZeoNe6eCEV3Rn1"
+  "url":"src/main/resources/**username**/**transactionId**/filename"
+}
+* Response code: 200:OK
+
+##### Replacing an attachment in a transaction
+* Enter :8080/transaction/**transactionId**/attachments/**attachmentId** in the URL section. Keep method as 'PUT' and hit 'Send' button
+For eg: localhost:8080/transact/2a$04$9S1YyzCM4NRiMDqaV8s9ZeoNe6eCEV3Rn1-THLTqJeSKX02cicjN2/attachments/$2a$04$9S1YyzCM4NRiMDqaV8s9ZeoNe6eCEV3Rn1 
+* Select body tab. Select 'raw' radio button and change text to JSON(application/json)
+* In the input box below, enter any json file according to below format 
+* {"url":"**Absolute url to the image file**"}
+* Expected Result (dummy value) when in 'Dev' profile:
+{
+  "uuid":"$2a$04$9S1YyzCM4NRiMDqaV8s9ZeoNe6eCEV3Rn1-THLTqJeSKX02cicjN2"
+  "url":"https://s3.amazonaws.com/**BucketName**/filename"
+}
+* Expected Result (dummy value) when in 'Local' profile:
+{
+  "uuid":"$2a$04$9S1YyzCM4NRiMDqaV8s9ZeoNe6eCEV3Rn1-THLTqJeSKX02cicjN2"
+  "url":"src/main/resources/**username**/**transactionId**/filename"
+}
+* Response code: 200:OK
+
+##### Deleting an attachment in a transaction
+* Enter :8080/transaction/**transactionId**/attachments/**attachmentId** in the URL section. Keep method as 'DELETE' and hit 'Send' button
+For eg: localhost:8080/transact/2a$04$9S1YyzCM4NRiMDqaV8s9ZeoNe6eCEV3Rn1-THLTqJeSKX02cicjN2/attachments/$2a$04$9S1YyzCM4NRiMDqaV8s9ZeoNe6eCEV3Rn1 
+* Select body tab. Select 'raw' radio button and change text to JSON(application/json)
+* Response code: 204:No Content
+----------------------------------------------------------------------------------------------------------------------------------------
 ### Step 3: Steps to Run Integration Tests
 
 * Run UserLoginApplicationTests,java from Intellij / Eclipse IDE
