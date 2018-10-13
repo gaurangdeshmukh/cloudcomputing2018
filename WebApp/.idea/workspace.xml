@@ -2,10 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e1114661-0b33-4387-98bf-ca41442ae94c" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/rest_api/Service/AttachmentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/rest_api/Service/AttachmentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/rest_api/Service/S3AttachmentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/rest_api/Service/S3AttachmentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/rest_api/Service/TransactionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/rest_api/Service/TransactionService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/target/" />
@@ -29,7 +25,7 @@
         <counts>
           <entry key="class" value="11" />
           <entry key="java" value="9" />
-          <entry key="properties" value="1" />
+          <entry key="properties" value="2" />
           <entry key="xml" value="1" />
         </counts>
       </usages-collector>
@@ -37,7 +33,7 @@
         <counts>
           <entry key="CLASS" value="11" />
           <entry key="JAVA" value="9" />
-          <entry key="Properties" value="1" />
+          <entry key="Properties" value="2" />
           <entry key="XML" value="1" />
         </counts>
       </usages-collector>
@@ -58,6 +54,15 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/resources/application.properties">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="60">
+              <caret line="4" column="27" lean-forward="true" selection-start-line="4" selection-start-column="27" selection-end-line="4" selection-end-column="27" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/example/rest_api/Service/S3AttachmentService.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="405">
@@ -74,10 +79,10 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/main/resources/application.properties" />
         <option value="$PROJECT_DIR$/src/main/java/com/example/rest_api/Service/S3AttachmentService.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/example/rest_api/Service/AttachmentService.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/example/rest_api/Service/TransactionService.java" />
+        <option value="$PROJECT_DIR$/src/main/resources/application.properties" />
       </list>
     </option>
   </component>
@@ -146,6 +151,19 @@
               <item name="rest_api" type="462c0819:PsiDirectoryNode" />
               <item name="Service" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="rest_api" type="b2602c69:ProjectViewProjectNode" />
+              <item name="WebApp" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="resources" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="rest_api" type="b2602c69:ProjectViewProjectNode" />
+              <item name="WebApp" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
@@ -195,12 +213,12 @@
       <option name="presentableId" value="Default" />
       <updated>1539452618076</updated>
       <workItem from="1539452620563" duration="1673000" />
-      <workItem from="1539454961355" duration="7380000" />
+      <workItem from="1539454961355" duration="7522000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="9053000" />
+    <option name="totallyTimeSpent" value="9195000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="27" width="1920" height="1053" extended-state="6" />
@@ -249,13 +267,6 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
       <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/application.properties">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" column="31" selection-start-line="3" selection-start-column="31" selection-end-line="3" selection-end-column="31" />
-        </state>
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/example/rest_api/Entities/Attachments.java">
       <provider selected="true" editor-type-id="text-editor">
@@ -404,6 +415,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="405">
           <caret line="275" lean-forward="true" selection-start-line="275" selection-end-line="275" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/application.properties">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="27" lean-forward="true" selection-start-line="4" selection-start-column="27" selection-end-line="4" selection-end-column="27" />
         </state>
       </provider>
     </entry>
