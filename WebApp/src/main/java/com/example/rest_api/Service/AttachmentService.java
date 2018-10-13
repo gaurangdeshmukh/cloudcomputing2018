@@ -46,7 +46,9 @@ public class AttachmentService {
     @Autowired
     ResponseService responseService;
 
+    //Location to store the file in local system (Destination directory)
     private String resourcePath = "src/main/resources/Cloud_Files/";
+
 
     public List<Attachments> getAllAttachments(String auth, String transcation_id) {
 
@@ -55,8 +57,10 @@ public class AttachmentService {
         Optional<User> optionalUser = userDao.findById(userCredentials[0]);
         try {
             User user = optionalUser.get();
+            //Authenticate user
             if (userService.authUser(userCredentials)) {
 
+                //Authenticate transaction and user
                 Transactions transactions = transactionsDao.findTransactionAttachedToUser(transcation_id, user);
 
                 return transactions.getAttachmentsList();
@@ -70,33 +74,44 @@ public class AttachmentService {
     }
 
     public ResponseEntity addAttachment(String auth, String transcation_id, Attachments attachment) {
+
         String userCredentials[] = userService.getUserCredentials(auth);
 
         Optional<User> optionalUser = userDao.findById(userCredentials[0]);
         try {
 
             User user = optionalUser.get();
+            //Authenticate user
             if (userService.authUser(userCredentials)) {
 
+                //Authenticate transaction and user
                 Transactions transaction = transactionsDao.findTransactionAttachedToUser(transcation_id, user);
 
+                //File object for existing file
                 File file = new File(attachment.getUrl());
+
                 String extension = FilenameUtils.getExtension(file.getName());
+
                 if (!extension.equals("jpeg") && !extension.equals("jpg") && !extension.equals("png")) {
                     return responseService.generateResponse(HttpStatus.UNAUTHORIZED,
                             "{\"Response\":\"Enter file with jpeg, jpg or png extension only\"}");
                 }
 
+                //Build new location for the file
                 String newPath = resourcePath +user.getUsername()+"/"+transaction.getTransaction_id()+"/"+ file.getName();
 
+                //Transfer file from source to destination
                 FileUtils.copyFile(file,new File(newPath));
 
                 Attachments attachments = new Attachments();
                 attachments.setUrl(newPath);
+
                 if (!attachments.getId().isEmpty()) {
 
                     transaction.addAttachment(attachments);
                     attachments.setTransactions(transaction);
+
+                    //Save attachment and transaction in database
                     attachmentDao.save(attachments);
                     transactionsDao.save(transaction);
                     return responseService.generateResponse(HttpStatus.OK, attachments);
@@ -116,8 +131,11 @@ public class AttachmentService {
         Optional<User> optionalUser = userDao.findById(userCredentials[0]);
         try {
             User user = optionalUser.get();
+
+            //Authenticate User
             if (userService.authUser(userCredentials)) {
 
+                //Get transaction attached to user
                 Transactions transactions = transactionsDao.findTransactionAttachedToUser(transactionId, user);
 
                 if (transactions != null) {
@@ -126,10 +144,14 @@ public class AttachmentService {
 
                     if (previousAttachments != null) {
                         File newFile = new File(newAttachment.getUrl());
+
+                        //Build path for new file
                         String newPath = resourcePath +user.getUsername()+"/"+transactions.getTransaction_id()+"/"+ newFile.getName();
 
+                        //Transfer file from source to destination
                         FileUtils.copyFile(newFile,new File(newPath));
 
+                        //Delete the previous file
                         File previousFile = new File(previousAttachments.getUrl());
                         if (previousFile.exists()) {
                             previousFile.delete();
@@ -159,7 +181,9 @@ public class AttachmentService {
 
                 Transactions transactions = transactionsDao.findTransactionAttachedToUser(transactionId,user);
                 if (transactions != null) {
+
                     List<Attachments> attachmentList = transactions.getAttachmentsList();
+
                     Iterator it = attachmentList.iterator();
                     while (it.hasNext()) {
                         Attachments attachments = (Attachments) it.next();
