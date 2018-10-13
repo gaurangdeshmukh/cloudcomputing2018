@@ -55,13 +55,17 @@ public class TransactionService {
 
         String[] userCredentials = userService.getUserCredentials(auth);
 
+        //Authenticate user
         if(userService.authUser(userCredentials)){
             User user = userDao.getOne(userCredentials[0]);
             try{
-                String id = transaction.getCategory() + transaction.getMerchant();
 
+                //Generate a new transaction ID
                 while(true) {
+                    //Generating UUID for transaction
                     String hashedId = UUID.randomUUID().toString();
+
+                    //If transactioin id is unique then set the id else, continue the process
                     if(!ifTransactExists(hashedId)) {
                         transaction.setTransaction_id(hashedId);
                         break;
@@ -90,14 +94,18 @@ public class TransactionService {
         if(userService.authUser(userCredentials)){
             Optional<User> optionalUser = userDao.findById(userCredentials[0]);
                 try{
+
+                    //Finding the previous transaction attached to the user
                     Transactions existingTransaction = transactionDao.findTransactionAttachedToUser(id,optionalUser.get());
 
+                    //updating the existing transaction with new values
                     existingTransaction.setAmount(updatedTransaction.getAmount());
                     existingTransaction.setCategory(updatedTransaction.getCategory());
                     existingTransaction.setDate(updatedTransaction.getDate());
                     existingTransaction.setDescription(updatedTransaction.getDescription());
                     existingTransaction.setMerchant(updatedTransaction.getMerchant());
 
+                    //saving the transaction
                     transactionDao.save(existingTransaction);
                     User user = userDao.getOne(userCredentials[0]);
                     user.updateTransaction(id,updatedTransaction);
