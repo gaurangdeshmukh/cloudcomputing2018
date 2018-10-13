@@ -3,6 +3,7 @@ package com.example.rest_api.Service;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
@@ -49,7 +50,7 @@ public class S3AttachmentService {
     private String clientRegion = "us-east-1";
 
     //S3 Bucket name
-    private String bucketName = "cyse6225-fall2018-kalyanramans.me.csye6225.com";
+    private String bucketName = "";
 
     public List<Attachments> getAllAttachments(String auth, String transcation_id) {
 
@@ -211,6 +212,15 @@ public class S3AttachmentService {
                     .withCredentials(new DefaultAWSCredentialsProviderChain())
                     .build();
 
+            if(!getBucketName(s3Client)){
+                System.out.println("Make sure bucket name is correct");
+                return null;
+            }
+
+            if(bucketName == null ||bucketName.isEmpty()){
+                return null;
+            }
+
             PutObjectRequest request = new PutObjectRequest(bucketName, fileObjectKeyName, new File(fileName));
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType("image/" + FilenameUtils.getExtension(fileUrl));
@@ -247,6 +257,13 @@ public class S3AttachmentService {
                     .withCredentials(new DefaultAWSCredentialsProviderChain())
                     .build();
 
+            if(bucketName == null || bucketName.isEmpty()){
+                if(!getBucketName(s3Client)){
+                    System.out.println("Make sure bucket name is correct....");
+                    return false;
+                }
+            }
+
             s3Client.deleteObject(new DeleteObjectRequest(bucketName, objectKeyName));
             return true;
         } catch (Exception e) {
@@ -255,6 +272,28 @@ public class S3AttachmentService {
 
 
         return false;
+    }
+
+    public boolean getBucketName(AmazonS3 seClient){
+
+        try{
+
+            List<Bucket> bucketNames = seClient.listBuckets();
+            for(Bucket b : bucketNames){
+                String bucketName = b.getName().toLowerCase();
+                if(bucketName.matches("(csye6225-fall2018-)+[a-z0-9]+(.me.csye6225.com)")){
+                    this.bucketName = b.getName();
+                    return true;
+                }
+            }
+
+        }catch(Exception e){
+            System.out.println("Finding bucket error....");
+        }
+
+
+        return false;
+
     }
 
 }
