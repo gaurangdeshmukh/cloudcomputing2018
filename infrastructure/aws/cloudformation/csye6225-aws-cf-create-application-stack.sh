@@ -1,160 +1,366 @@
-#!/bin/bash
-#====================================================================================================
-# Synopsis: This script is used to create CentOS ec2 instances with security group and Route 53
-# in CloudFormation Stack
-#====================================================================================================
-# Creation of Elastic Compute Cloud stacks
-#====================================================================================================
-echo "Enter Stack Name for the creation of Ec2 Stack"
-read sn
-echo ""
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "AWS CloudFormation Sample Template Ec2instance, DBinstances With SecurityGroup",
+    "Parameters": {
+        "KeyName": {
+            "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
+            "Type": "AWS::EC2::KeyPair::KeyName",
+            "ConstraintDescription": "Existing or Newly created EC2 KeyPair"
+        },
+        "InstanceType": {
+            "Description": "EC2 instance type.",
+            "Type": "String",
+            "Default": "t2.micro"
+        },
 
-#====================================================================================================
-#Creation of networking stacks
-#====================================================================================================
-echo "Enter stack name same as networking script"
-read sn1
-echo ""
+        "VPC": {
+            "Description": "VPC.",
+            "Type": "String"
+        },
 
-#====================================================================================================
-# Validating the CloudFormation Template
-#====================================================================================================
+        "SSHLocation": {
+            "Description": "The IP address range that can be used to ssh/ https to the EC2 instances",
+            "Type": "String",
+            "MinLength": "9",
+            "MaxLength": "18",
+            "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+            "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x."
+        },
 
-Valid=$(aws cloudformation  validate-template --template-body file://csye6225-cf-application.json)
-if [ $? -ne "0" ]
-then
-  echo "$Valid"
-  echo "$StackName Template file to build infrastructure is NOT VALID....."
-  exit 1
-else
-  echo " Proceed ahead. CloudFormation Template is VALID......"
-  echo ""
-fi
+        "SubnetId": {
+            "Description": "Public SubnetId in VPC ",
+            "Type": "String"
+        },
 
-#====================================================================================================
-# Obtaining Public Subnet Id for VPC
-#====================================================================================================
+        "SubnetId1": {
+            "Description": "Private SubnetId in RDS instance",
+            "Type": "String"
+        },
 
-subname="-csye6225-Pubsubnet1"
+        "SubnetId2": {
+            "Description": "Private SubnetId in RDS instance",
+            "Type": "String"
+        },
 
-subname=$sn1$subname
+        "HostedZone" : {
+            "Type" : "String",
+            "Description" : "The DNS name of an existing Amazon Route 53 hosted zone",
+            "AllowedPattern" : "(?!-)[a-zA-Z0-9-.]{1,63}(?<!-)",
+            "ConstraintDescription" : "must be a valid DNS zone name."
+          },
 
-echo "Public Subnet name :"
-echo $subname
+        "HashKeyElementName" : {
+            "Description" : "HashType PrimaryKey Name",
+            "Type" : "String",
+            "AllowedPattern" : "[a-zA-Z0-9]*",
+            "MinLength": "1",
+            "MaxLength": "2048",
+            "ConstraintDescription" : "must contain only alphanumberic characters"
+          },
+      
+        "HashKeyElementType" : {
+            "Description" : "HashType PrimaryKey Type",
+            "Type" : "String",
+            "Default" : "S",
+            "AllowedPattern" : "[S|N]",
+            "MinLength": "1",
+            "MaxLength": "1",
+            "ConstraintDescription" : "must be either S or N"
+          },
+      
+        "ReadCapacityUnits" : {
+            "Description" : "Provisioned read throughput",
+            "Type" : "Number",
+            "Default" : "5",
+            "MinValue": "5",
+            "MaxValue": "10000",
+            "ConstraintDescription" : "must be between 5 and 10000"
+          },
+      
+        "WriteCapacityUnits" : {
+            "Description" : "Provisioned write throughput",
+            "Type" : "Number",
+            "Default" : "5",
+            "MinValue": "5",
+            "MaxValue": "10000",
+            "ConstraintDescription" : "must be between 5 and 10000"
+          },
 
-echo ""
+        "TableName" :{
+              "Description" : "Name of the DynamoDB Table",
+              "Type" : "String"
+          },
 
-SubnetId=$(aws ec2 describe-subnets --filters "Name=tag:Name,Values=$subname"  --query 'Subnets[*].SubnetId' --output text 2>&1)
+        "DBUser": {
+            "NoEcho": "true",
+            "Description" : "The database admin account username",
+            "Type": "String",
+            "MinLength": "1",
+            "MaxLength": "16",
+            "AllowedPattern" : "[a-zA-Z][a-zA-Z0-9]*",
+            "ConstraintDescription" : "must begin with a letter and contain only alphanumeric characters."
+          },
+      
+        "DBPassword": {
+            "NoEcho": "true",
+            "Description" : "The database admin account password",
+            "Type": "String",
+            "MinLength": "8",
+            "MaxLength": "41",
+            "AllowedPattern" : "[a-zA-Z0-9]*",
+            "ConstraintDescription" : "must contain only alphanumeric characters."
+          },
 
-echo "Public Subnet id :"
-echo $SubnetId
+        "DBInstanceClass": {
+              "Description" : "The database instance type",
+              "Type": "String",
+              "Default": "db.t2.medium",
+              "AllowedValues" : [ "db.t2.medium"],
+              "ConstraintDescription" : "must select a valid database instance type."
+            },
+
+        "S3Bucket": {
+                "Description" : "The database instance type",
+                "Type": "String"
+              },
+
+        "MultiAZ" : {
+              "Description" : "Multi-AZ master database",
+              "Type" : "String",
+              "Default" : "false",
+              "AllowedValues" : [ "true", "false" ],
+              "ConstraintDescription" : "must be true or false."
+            },
+
+        "PubliclyAccessible" : {
+              "Description" : "PubliclyAccessible or not",
+              "Type" : "String",
+              "Default" : "false",
+              "AllowedValues" : [ "true", "false" ],
+              "ConstraintDescription" : "must be true or false."
+            },
+
+        "DBInstanceIdentifier" : {
+            "Type" : "String"
+            },
+
+        "DBName" : {
+            "Type":"String"
+            },
+
+        "Subnetgroupname":{
+            "Description" : "DB subnet group",
+            "Type" : "String"
+            }
+        
+    },
+    "Mappings": {
+        "AWSInstanceType2Arch": {
+            "t2.micro": {
+                "Arch": "HVM64"
+            }
+        },
+        "AWSRegionArch2AMI": {
+            "us-east-1": {
+                "HVM64": "ami-9887c6e7"
+            }
+        }
+    },
+
+    "Conditions" : {
+        "Is-EC2-VPC"     : {"Fn::Equals" : [{"Ref" : "AWS::Region"}, "us-east-1" ]}
+      },
 
 
-#====================================================================================================
-# Obtaining Private Subnet Id for RDS Instance
-#====================================================================================================
-subname1="-csye6225-Pvtsubnet1"
-subname1=$sn1$subname1
+    "Resources": {
+        "EC2Instance": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "ImageId": {
+                    "Fn::FindInMap": [
+                        "AWSRegionArch2AMI",
+                        {
+                            "Ref": "AWS::Region"
+                        },
+                        {
+                            "Fn::FindInMap": [
+                                "AWSInstanceType2Arch",
+                                {
+                                    "Ref": "InstanceType"
+                                },
+                                "Arch"
+                            ]
+                        }
+                    ]
+                },
+                "InstanceType": {
+                    "Ref": "InstanceType"
+                },
+                "BlockDeviceMappings": [
+                    {
+                    "DeviceName" : "/dev/sda1",
+                    "Ebs": {
+                            "VolumeSize": "20",
+                            "DeleteOnTermination": "true",
+                            "VolumeType": "gp2"
+                        }
+                    }],
+                "KeyName": {
+                    "Ref": "KeyName"
+                },
+                "NetworkInterfaces": [
+                    {
+                        "AssociatePublicIpAddress": "true",
+                        "DeviceIndex": "0",
+                        "GroupSet": [{"Ref": "SecurityGroupBySG"}],
+                        "SubnetId": {"Ref": "SubnetId"}
+                    }
+                ],
+                "Tags": [
+                    {
+                      "Key": "Name",
+                      "Value": {
+                        "Fn::Join": ["",[{"Ref": "AWS::StackName"},"-csye6225-ec2"]]
+                      }
+                    }
+                ]
+            }
+        },
 
-echo "Private Subnet name :"
-echo $subname1
-echo ""
+        "myDynamoDBTable" : {
+            "Type" : "AWS::DynamoDB::Table",
+            "Properties" : {
+              "AttributeDefinitions": [ { 
+                "AttributeName" : {"Ref" : "HashKeyElementName"},
+                "AttributeType" : {"Ref" : "HashKeyElementType"}
+              } ],
+              "KeySchema": [
+                { "AttributeName": {"Ref" : "HashKeyElementName"}, "KeyType": "HASH" }
+              ],
+              "ProvisionedThroughput" : {
+                "ReadCapacityUnits" : {"Ref" : "ReadCapacityUnits"},
+                "WriteCapacityUnits" : {"Ref" : "WriteCapacityUnits"}
+              },
+              "TableName" : "csye6225"              
+            }
+          },
 
-SubnetId1=$(aws ec2 describe-subnets --filters "Name=tag:Name,Values=$subname1"  --query 'Subnets[*].SubnetId' --output text 2>&1)
-echo $SubnetId1
+          "myDB" : {
+            "Type" : "AWS::RDS::DBInstance",
+            "Properties" : {
+              "AllocatedStorage" : "5",
+              "DBInstanceClass" : { "Ref" : "DBInstanceClass" },
+              "DBInstanceIdentifier" : {"Ref" : "DBInstanceIdentifier"},
+              
+              "DBSubnetGroupName" : {"Ref":"myDBSubnetGroup"},
+              "Engine" : "MySQL",
+              "MultiAZ" : { "Ref" : "MultiAZ" },
+              "MasterUsername" : { "Ref" : "DBUser" },
+              "MasterUserPassword" : { "Ref" : "DBPassword" },
+              "PubliclyAccessible" :{ "Ref" : "PubliclyAccessible" },
+              "VPCSecurityGroups": { "Fn::If" : [ "Is-EC2-VPC", [ { "Fn::GetAtt": [ "DBSecurityGroup", "GroupId" ] } ], { "Ref" : "AWS::NoValue"}]},
+              "DBName" : { "Ref" : "DBName" }
+              
+              
+              
+            }
+          },
+          
+          "myDBSubnetGroup" : {
+            "Type" : "AWS::RDS::DBSubnetGroup",
+            "Properties" : {
+               "DBSubnetGroupDescription" : "description",
+               "SubnetIds" : [{"Ref":"SubnetId1"},{"Ref":"SubnetId2"}]
+               
+            }
+         },
+
+        "MyDNSRecord" : {
+            "Type" : "AWS::Route53::RecordSet",
+            "Properties" : {
+              "HostedZoneName" : { "Fn::Join" : [ "", [{"Ref" : "HostedZone"}, "." ]]},
+              "Comment" : "DNS name for my instance.",
+              "Name" : { "Fn::Join" : [ "", [{"Ref" : "EC2Instance"}, ".", {"Ref" : "AWS::Region"}, ".", {"Ref" : "HostedZone"} ,"."]]},
+              "Type" : "TXT",
+              "TTL" : "60",
+              "ResourceRecords" : ["\"csye-6225-fall2018\""]
+            }
+        },
+
+        "SecurityGroupBySG" : {
+            "Type" : "AWS::EC2::SecurityGroup",
+            "Properties" : {
+                "GroupDescription" : "allow connections from specified source security group",
+                "VpcId" : {"Ref" : "VPC"},
+                "SecurityGroupIngress" : [
+                    {
+                       "IpProtocol" : "tcp",
+                       "FromPort" : "22",
+                       "ToPort" : "22",
+                       "CidrIp" : { "Ref" : "SSHLocation"}
+                    },
+                    { "IpProtocol" : "tcp", 
+                     "FromPort" : "80",
+                     "ToPort" : "80", 
+                     "CidrIp" : { "Ref" : "SSHLocation"}
+                    },
+                    { "IpProtocol" : "tcp", 
+                        "FromPort" : "443",
+                        "ToPort" : "443", 
+                        "CidrIp" : { "Ref" : "SSHLocation"}
+                    }
+                    
+                ],
+                "Tags": [
+                  {
+                    "Key": "Name",
+                    "Value": {"Fn::Join": ["",[{"Ref": "AWS::StackName"},"-csye6225-webapp"]]}
+                  }
+                ]
+            }
+           },
+
+           "s3bucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "BucketName":  {"Ref" :"S3Bucket"}
+            }
+            },
 
 
-subname2="-csye6225-Pvtsubnet2"
-subname2=$sn1$subname2
+           "DBSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Condition" : "Is-EC2-VPC",
+            "Properties": {
+                "GroupDescription" : "allow connections from specified source security group and ec2 Security group",
+                "VpcId" : {"Ref" : "VPC"},
+               "SecurityGroupIngress": [
+                {
+                    "IpProtocol" : "tcp",
+                    "FromPort" : "3306",
+                    "ToPort" : "3306",
+                    "SourceSecurityGroupId" : { "Ref": "SecurityGroupBySG"}
+                 }
+               ],
+               "Tags": [
+                {
+                  "Key": "Name",
+                  "Value": {"Fn::Join": ["",[{"Ref": "AWS::StackName"},"-csye6225-rds"]]}
+                }
+              ]
+            }
+         }
+    },
 
-echo "Private Subnet name :"
-echo $subname2
-echo ""
-
-SubnetId2=$(aws ec2 describe-subnets --filters "Name=tag:Name,Values=$subname2"  --query 'Subnets[*].SubnetId' --output text 2>&1)
-echo $SubnetId2
-
-#====================================================================================================
-# Obtaining Security Group
-#====================================================================================================
-
-SGname=-csye6225-webapp
-SGname=$sn1$SGname
-echo ""
-
-#====================================================================================================
-# Creating a key-pair for ec2 instance
-#====================================================================================================
-
-exist=$(aws ec2 describe-key-pairs --query KeyPairs[].{KeyName:KeyName} --output text 2>&1)
-if [[ -z "$exist" ]]
-then
-  echo "No Keypair exist. Please provide name to the keypair for ec2 instances"
-  read key
-  aws ec2 create-key-pair --key-name $key --query 'KeyMaterial' --output text  > $key.pem 2>&1
-  chmod 400 $key.pem 2>&1
-else
-  echo "we have existing keypair."
-  echo "$exist"
-fi
-echo ""
-
-keypair=$(aws ec2 describe-key-pairs --query KeyPairs[].{KeyName:KeyName} --output text 2>&1)
-echo "$keypair is used for ec2 server login"
-echo ""
-
-#====================================================================================================
-# Obtaining Hosted Zone ID and zones
-#====================================================================================================
-ID=$(aws route53 list-hosted-zones --query HostedZones[].{Id:Id} --output text|cut -d"/" -f3 2>&1)
-echo "Route53 Hosted Id is: $ID"
-echo ""
-
-HostedZoneName=$(aws route53 list-hosted-zones --query HostedZones[].{Name:Name} --output text | sed 's/.$//' 2>&1)
-echo "Route53 Hosted Name is: $HostedZoneName"
-echo ""
-
-#====================================================================================================
-# Obtaining VPC Id
-#====================================================================================================
-vpc_Id=$(aws ec2 describe-vpcs   --query 'Vpcs[*].{VpcId:VpcId}' --filters Name=tag:Name,Values=$sn1-csye6225-vpc Name=is-default,Values=false --output text  2>&1)
-echo "Vpc id is: $vpc_Id"
-
-#DBsg=$(aws ec2 describe-security-groups --filters "Name=vpc-id,Values=$vpc_Id" "Name=ip-permission.to-port,Values=3306" --query SecurityGroups[].{GroupId:GroupId})
-#echo "Database security group ID"
-#echo $DBsg
-
-#====================================================================================================
-#Creation of the stack using Parameter File
-#====================================================================================================
-
-create=$(aws cloudformation create-stack --stack-name $sn --template-body file://csye6225-cf-application.json \
-  --parameters ParameterKey=KeyName,ParameterValue=$keypair ParameterKey=SubnetId,ParameterValue=$SubnetId ParameterKey=SubnetId1,ParameterValue=$SubnetId1 ParameterKey=SubnetId2,ParameterValue=$SubnetId2 \
-    ParameterKey=HostedZone,ParameterValue=$HostedZoneName ParameterKey=SSHLocation,ParameterValue=0.0.0.0/0 ParameterKey=VPC,ParameterValue=$vpc_Id \
-    ParameterKey=HashKeyElementName,ParameterValue=id ParameterKey=DBUser,ParameterValue=csye6225master ParameterKey=DBPassword,ParameterValue=csye6225password \
-    ParameterKey=DBInstanceIdentifier,ParameterValue=csye6225-spring2018 ParameterKey=DBName,ParameterValue=csye6225 ParameterKey=Subnetgroupname,ParameterValue=$subname1 \
-    ParameterKey=TableName,ParameterValue=csye6225 ParameterKey=S3Bucket,ParameterValue=$HostedZoneName.csye6225.com)
-
-if [ $? -ne "0" ]
-then
-  echo "Creation of $sn stack failed...."
-  exit 1
-else
-  echo "Creation of $sn is in progress......"
-fi
-
-#====================================================================================================
-# Waiting for the stack to get created completely
-#====================================================================================================
-
-echo Stack in progress.....
-Success=$(aws cloudformation wait stack-create-complete --stack-name $sn)
-
-if [[ -z "$Success" ]]
-then
-  echo "$StackName stack is created successfully. Printing output..."
-else
-  echo "Creation of $StackName stack failed. Printing error and exiting....."
-  echo "$Success"
-  exit 1
-fi
+    "Outputs" : {
+        "JDBCConnectionString": {
+          "Description" : "JDBC connection string for the database",
+          "Value" : { "Fn::Join": [ "", [ "jdbc:mysql://",
+                                          { "Fn::GetAtt": [ "myDB", "Endpoint.Address" ] },
+                                          ":",
+                                          { "Fn::GetAtt": [ "myDB", "Endpoint.Port" ] },
+                                          "/",
+                                          { "Ref": "DBName" }]]}
+        }
+      }
+}
