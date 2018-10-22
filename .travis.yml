@@ -8,7 +8,7 @@ install: true
 
 script:
   - pwd
-  - cd Webapp
+  - cd WebApp
   - ./gradlew war
   - cd build/libs
   - ls -al
@@ -22,7 +22,7 @@ after_success:
   - mkdir codedeploy_artifact
   - cp infrastructure/aws/codedeploy/*.sh .
   - cp infrastructure/aws/codedeploy/*.yml .
-  - zip -r csye6225-web-app-${TRAVIS_JOB_NUMBER}.zip Webapp/build/libs/ROOT.war *.sh *.yml
+  - zip -r csye6225-web-app-${TRAVIS_JOB_NUMBER}.zip WebApp/build/libs/ROOT.war *.sh *.yml
   - ls -al
   - mv csye6225-web-app-${TRAVIS_JOB_NUMBER}.zip codedeploy_artifact/
   - ls -al
@@ -41,15 +41,20 @@ deploy:
     region: us-east-1
     skip_cleanup: true
     access_key_id: $access_key_id
-    secret_access_key: $secret_access_key
+    secret_access_key: $access_secret_key
+    acl: public_read
+    on:
+      branch: assignment05-06
    
   - provider: codedeploy
     access_key_id: $access_key_id
+    secret_access_key: $access_secret_key
     bucket: $s3_bucket
     key: csye6225-web-app-${TRAVIS_JOB_NUMBER}.zip
     bundle_type: zip
     application: $application
     deployment_group: $deployment_group
     region: us-east-1
-    secret_access_key: $secret_access_key
     wait-until-deployed: true
+    on:
+      branch: assignment05-06
