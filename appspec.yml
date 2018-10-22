@@ -2,8 +2,8 @@ version: 0.0
 os: linux
 
 files:             
-  - source: ./webapp/build/libs/ROOT.war
-    destination: /opt/tomcat/webapps
+  - source: ./WebApp/build/libs/ROOT.war
+    destination: /opt/tomcat/Webapps
 
 hooks:
   AfterInstall:
