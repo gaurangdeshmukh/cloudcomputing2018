@@ -15,7 +15,6 @@ script:
   - cd ../../..
   - pwd
   - ls -al
-  - pwd
 
 after_success:
   - pwd
