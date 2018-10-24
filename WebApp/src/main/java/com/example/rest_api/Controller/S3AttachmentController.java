@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class S3AttachmentController {
     @PostMapping("/transact/{transaction_id}/attachments")
     public ResponseEntity addAttachment(@RequestHeader(value="Authorization",defaultValue = "NoAuth")String auth,
                                         @PathVariable(value="transaction_id")String transactionId,
-                                        @RequestBody Attachments attachments){
+                                        @RequestParam("file")MultipartFile attachments){
 
         if(!auth.equals("NoAuth") && !transactionId.isEmpty()){
             return s3AttachmentService.addAttachment(auth,transactionId,attachments);
@@ -50,7 +51,7 @@ public class S3AttachmentController {
     public ResponseEntity updateTransaction(@RequestHeader(value="Authorization",defaultValue = "NoAuth")String auth,
                                             @PathVariable(value="transaction_id")String transactionId,
                                             @PathVariable(value="attachment_id")String attachmentId,
-                                            @RequestBody Attachments attachment){
+                                            @RequestParam("file") MultipartFile attachment){
 
         if(!auth.equals("NoAuth") && !transactionId.isEmpty() && attachment != null && !attachmentId.isEmpty()){
             return s3AttachmentService.updateAttachment(auth,transactionId,attachment,attachmentId);
