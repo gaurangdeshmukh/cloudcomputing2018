@@ -17,6 +17,34 @@ else
   read StackName
   echo "Deleting the stack $StackName"
 fi
+
+#====================================================================================================
+# Deleting the stack
+#====================================================================================================
+
+HostedZoneName=$(aws route53 list-hosted-zones --query HostedZones[].{Name:Name} --output text)
+com="csye6225.com"
+BucketName=$HostedZoneName$com
+
+S3Deletion=$(aws s3 ls s3://$BucketName)
+if [[ -z "$S3Deletion" ]]
+then
+  echo "$HostedZoneName$com is empty. Deleting stack"
+  break
+else
+  echo $HostedZoneName$com
+  echo "Without file deletion. S3 bucket cannot be deleted"
+  echo "Do you want to delete the file then chose - Yes/No"
+  read response
+  if [[ "$response" == "Yes" ]]
+  then
+    delete=$(aws s3 rm s3://$BucketName --recursive)
+    echo $delete
+  else
+    exit 1
+  fi
+fi
+
 #====================================================================================================
 # Deleting the stack
 #====================================================================================================
