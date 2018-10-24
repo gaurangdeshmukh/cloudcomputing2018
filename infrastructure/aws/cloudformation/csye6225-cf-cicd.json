@@ -9,6 +9,10 @@
         "TravisUser": {
             "Description": "Travis-ci user",
             "Type": "String"
+        },
+        "AttachBucket":{
+            "Description": "Attachment bucket",
+            "Type": "String"
         }
     },
     "Resources": {
@@ -161,6 +165,23 @@
                                         "arn:aws:s3:::",
                                         {
                                             "Ref": "DeployBucket"
+                                        }
+                                    ]
+                                ]
+                            }
+                        },
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "s3:*"
+                            ],
+                            "Resource": {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        "arn:aws:s3:::",
+                                        {
+                                            "Ref": "AttachBucket"
                                         }
                                     ]
                                 ]

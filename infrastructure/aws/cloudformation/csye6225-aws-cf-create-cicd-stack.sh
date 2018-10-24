@@ -36,13 +36,17 @@ HostedZoneName=$(aws route53 list-hosted-zones --query HostedZones[].{Name:Name}
 echo "Route53 Hosted Name is: $HostedZoneName"
 echo ""
 
+HostedZoneName1=$(aws route53 list-hosted-zones --query HostedZones[].{Name:Name} --output text)
+com="csye6225.com"
+BucketName=$HostedZoneName1$com
+
 #====================================================================================================
 #Creation of the stack using Parameter File
 #====================================================================================================
 export TravisUser=travis
 create=$(aws cloudformation create-stack --stack-name $sn --template-body file://csye6225-cf-cicd.json --capabilities CAPABILITY_NAMED_IAM \
   --parameters ParameterKey=DeployBucket,ParameterValue=code-deploy.$HostedZoneName.csye6225.com \
-  ParameterKey=TravisUser,ParameterValue=$TravisUser)
+  ParameterKey=TravisUser,ParameterValue=$TravisUser ParameterKey=AttachBucket,ParameterValue=$BucketName)
 
 if [ $? -ne "0" ]
 then
