@@ -85,8 +85,8 @@ public class S3AttachmentService {
 
                 File file = new File(multiPartFile.getOriginalFilename());
                 file.setWritable(true);
-//                FileOutputStream fos = new FileOutputStream("/opt/tomcat/uploads/"+file);
-                FileOutputStream fos = new FileOutputStream(file);
+                FileOutputStream fos = new FileOutputStream("/opt/tomcat/uploads/"+file);
+//                FileOutputStream fos = new FileOutputStream(file);
                 fos.write(multiPartFile.getBytes());
                 fos.close();
 
