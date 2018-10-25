@@ -36,7 +36,7 @@
                                         "arn:aws:s3:::",
                                         {
                                             "Ref": "DeployBucket"
-                                        }
+                                        },"/*"
                                     ]
                                 ]
                             }
@@ -156,8 +156,8 @@
                         {
                             "Effect": "Allow",
                             "Action": [
-                                "s3:*"
-                            ],
+                                "s3:List*"
+                              ],
                             "Resource": {
                                 "Fn::Join": [
                                     "",
@@ -173,8 +173,27 @@
                         {
                             "Effect": "Allow",
                             "Action": [
-                                "s3:*"
-                            ],
+                                "s3:PutObject*",
+                                "s3:GetObject*",
+                                "s3:DeleteObject*"
+                              ],
+                            "Resource": {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        "arn:aws:s3:::",
+                                        {
+                                            "Ref": "DeployBucket"
+                                        },"/*"
+                                    ]
+                                ]
+                            }
+                        },
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "s3:List*"
+                              ],
                             "Resource": {
                                 "Fn::Join": [
                                     "",
@@ -183,6 +202,25 @@
                                         {
                                             "Ref": "AttachBucket"
                                         }
+                                    ]
+                                ]
+                            }
+                        },
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "s3:PutObject*",
+                                "s3:GetObject*",
+                                "s3:DeleteObject*"
+                              ],
+                            "Resource": {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        "arn:aws:s3:::",
+                                        {
+                                            "Ref": "AttachBucket"
+                                        },"/*"
                                     ]
                                 ]
                             }
