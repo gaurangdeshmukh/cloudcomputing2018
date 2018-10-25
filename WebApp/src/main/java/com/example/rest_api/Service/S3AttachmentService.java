@@ -85,7 +85,7 @@ public class S3AttachmentService {
 
                 File file = new File(multiPartFile.getOriginalFilename());
                 file.setWritable(true);
-                FileOutputStream fos = new FileOutputStream(file);
+                FileOutputStream fos = new FileOutputStream("/opt/tomcat/uploads/"+file);
                 fos.write(multiPartFile.getBytes());
                 fos.close();
 
@@ -143,7 +143,7 @@ public class S3AttachmentService {
 
                     File file = new File(multiPartFile.getOriginalFilename());
                     file.setWritable(true);
-                    FileOutputStream fos = new FileOutputStream(file);
+                    FileOutputStream fos = new FileOutputStream("/opt/tomcat/uploads/"+file);
                     fos.write(multiPartFile.getBytes());
                     fos.close();
 
