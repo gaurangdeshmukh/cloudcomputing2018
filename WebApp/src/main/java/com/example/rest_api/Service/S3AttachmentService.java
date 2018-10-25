@@ -118,6 +118,7 @@ public class S3AttachmentService {
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
+            System.out.println(e.getStackTrace());
         }
 
         return responseService.generateResponse(HttpStatus.UNAUTHORIZED, null);
@@ -159,6 +160,7 @@ public class S3AttachmentService {
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
+            System.out.println(e.getStackTrace());
         }
 
 
