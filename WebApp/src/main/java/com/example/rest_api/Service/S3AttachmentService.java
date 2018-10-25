@@ -3,7 +3,10 @@ package com.example.rest_api.Service;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.*;
+import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.example.rest_api.Dao.AttachmentDao;
 import com.example.rest_api.Dao.TransactionsDao;
 import com.example.rest_api.Dao.UserDao;
@@ -12,14 +15,11 @@ import com.example.rest_api.Entities.Transactions;
 import com.example.rest_api.Entities.User;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
@@ -72,7 +72,7 @@ public class S3AttachmentService {
 
     }
 
-    public ResponseEntity addAttachment(String auth, String transcation_id, MultipartFile multiPartFile) {
+    public ResponseEntity addAttachment(String auth, String transcation_id, Attachments attachment) {
         String userCredentials[] = userService.getUserCredentials(auth);
 
         Optional<User> optionalUser = userDao.findById(userCredentials[0]);
@@ -83,7 +83,7 @@ public class S3AttachmentService {
 
                 Transactions transaction = transactionsDao.findTransactionAttachedToUser(transcation_id, user);
 
-                File file = new File(multiPartFile.getOriginalFilename());
+                File file = new File(attachment.getUrl());
                 String extension = FilenameUtils.getExtension(file.getName());
 
                 if (!extension.equals("jpeg") && !extension.equals("jpg") && !extension.equals("png")) {
@@ -92,13 +92,7 @@ public class S3AttachmentService {
                             "{\"Response\":\"Enter file with jpeg, jpg or png extension only\"}");
                 }
 
-                file.setWritable(true);
-                FileOutputStream fos = new FileOutputStream("/opt/tomcat/uploads/"+file);
-                fos.write(multiPartFile.getBytes());
-                fos.close();
-
-
-                String newPath = uploadToS3(multiPartFile, file.getName());
+                String newPath = uploadToS3(attachment.getUrl());
 
                 if (newPath == null) {
                     return responseService.generateResponse(HttpStatus.UNAUTHORIZED,
@@ -118,14 +112,13 @@ public class S3AttachmentService {
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            e.printStackTrace();
         }
 
         return responseService.generateResponse(HttpStatus.UNAUTHORIZED, null);
     }
 
     public ResponseEntity updateAttachment(String auth, String transactionId,
-                                           MultipartFile multiPartFile, String attachmentId) {
+                                           Attachments attachment, String attachmentId) {
         String userCredentials[] = userService.getUserCredentials(auth);
 
         Optional<User> optionalUser = userDao.findById(userCredentials[0]);
@@ -140,37 +133,21 @@ public class S3AttachmentService {
                 if (previousAttachment != null) {
                     URL fileUrl = new URL(previousAttachment.getUrl());
 
-                    File file = new File(multiPartFile.getOriginalFilename());
+                    String objectKeyName = FilenameUtils.getName(fileUrl.getPath());
 
-                    String extension = FilenameUtils.getExtension(file.getName());
-
-                    if (!extension.equals("jpeg") && !extension.equals("jpg") && !extension.equals("png")) {
-                        System.out.print(extension);
-                        return responseService.generateResponse(HttpStatus.UNAUTHORIZED,
-                                "{\"Response\":\"Enter file with jpeg, jpg or png extension only\"}");
-                    }
-
-                    file.setWritable(true);
-                    FileOutputStream fos = new FileOutputStream("/opt/tomcat/uploads/"+file);
-                    fos.write(multiPartFile.getBytes());
-                    fos.close();
-
-                    String objectKeyName = FilenameUtils.getName(previousAttachment.getUrl());
-
-                    String updatedUrl = updateInS3(multiPartFile, file.getName(),objectKeyName);
+                    String updatedUrl = updateInS3(attachment, objectKeyName);
                     if (updatedUrl != null) {
                         previousAttachment.setUrl(updatedUrl);
                         attachmentDao.save(previousAttachment);
                         transactionsDao.save(transactions);
 
                         return ResponseEntity.status(HttpStatus.OK)
-                                .body(previousAttachment);
+                                .body(attachment);
                     }
                 }
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            e.printStackTrace();
         }
 
 
@@ -209,10 +186,14 @@ public class S3AttachmentService {
     }
 
 
+    public String uploadToS3(String fileUrl) {
 
-    public String uploadToS3(MultipartFile fileUrl,String fileName) {
+        Random rand = new Random();
+        int randomNumber = rand.nextInt(1000000);
 
-        String fileObjectKeyName = FilenameUtils.getName(fileName);
+        String fileObjectKeyName = FilenameUtils.getName(fileUrl);
+
+        String fileName = fileUrl;
 
         try {
 
@@ -230,11 +211,11 @@ public class S3AttachmentService {
                 return null;
             }
 
+            PutObjectRequest request = new PutObjectRequest(bucketName, String.valueOf(randomNumber)+fileObjectKeyName, new File(fileName));
             ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentLength(fileUrl.getSize());
-            metadata.setContentType("image/" + FilenameUtils.getExtension(fileName));
+            metadata.setContentType("image/" + FilenameUtils.getExtension(fileUrl));
             metadata.addUserMetadata("x-amz-meta-title", "Your Profile Pic");
-            PutObjectRequest request = new PutObjectRequest(bucketName, fileObjectKeyName, fileUrl.getInputStream(),metadata);
+            request.setMetadata(metadata);
             s3Client.putObject(request);
 
             //Get url
@@ -248,10 +229,10 @@ public class S3AttachmentService {
         return null;
     }
 
-    public String updateInS3(MultipartFile attachments, String fileName,String oldObjectKeyName) {
+    public String updateInS3(Attachments attachments, String oldObjectKeyName) {
 
         if (deleteInS3(oldObjectKeyName)) {
-            return uploadToS3(attachments,fileName);
+            return uploadToS3(attachments.getUrl());
         }
 
         return null;
@@ -278,8 +259,6 @@ public class S3AttachmentService {
         } catch (Exception e) {
             System.out.println("failed to delete");
         }
-
-
         return false;
     }
 
@@ -295,10 +274,8 @@ public class S3AttachmentService {
                     return true;
                 }
             }
-
         }catch(Exception e){
             System.out.println("Finding bucket error....");
-            e.printStackTrace();
         }
 
 
