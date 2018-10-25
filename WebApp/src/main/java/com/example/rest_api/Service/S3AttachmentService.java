@@ -84,6 +84,7 @@ public class S3AttachmentService {
                 Transactions transaction = transactionsDao.findTransactionAttachedToUser(transcation_id, user);
 
                 File file = new File(multiPartFile.getOriginalFilename());
+                file.setWritable(true);
                 FileOutputStream fos = new FileOutputStream(file);
                 fos.write(multiPartFile.getBytes());
                 fos.close();
@@ -141,6 +142,7 @@ public class S3AttachmentService {
                     URL fileUrl = new URL(previousAttachment.getUrl());
 
                     File file = new File(multiPartFile.getOriginalFilename());
+                    file.setWritable(true);
                     FileOutputStream fos = new FileOutputStream(file);
                     fos.write(multiPartFile.getBytes());
                     fos.close();
