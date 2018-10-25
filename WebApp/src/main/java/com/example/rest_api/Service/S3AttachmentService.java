@@ -100,7 +100,7 @@ public class S3AttachmentService {
                             "{\"Response\":\"Enter file with jpeg, jpg or png extension only\"}");
                 }
 
-                String newPath = uploadToS3(multiPartFile);
+                String newPath = uploadToS3(multiPartFile, file.getName());
 
                 if (newPath == null) {
                     return responseService.generateResponse(HttpStatus.UNAUTHORIZED,
@@ -143,6 +143,15 @@ public class S3AttachmentService {
                     URL fileUrl = new URL(previousAttachment.getUrl());
 
                     File file = new File(multiPartFile.getOriginalFilename());
+
+                    String extension = FilenameUtils.getExtension(file.getName());
+
+                    if (!extension.equals("jpeg") && !extension.equals("jpg") && !extension.equals("png")) {
+                        System.out.print(extension);
+                        return responseService.generateResponse(HttpStatus.UNAUTHORIZED,
+                                "{\"Response\":\"Enter file with jpeg, jpg or png extension only\"}");
+                    }
+
                     file.setWritable(true);
                     FileOutputStream fos = new FileOutputStream("/opt/tomcat/uploads/"+file);
                     fos.write(multiPartFile.getBytes());
@@ -150,7 +159,7 @@ public class S3AttachmentService {
 
                     String objectKeyName = FilenameUtils.getName(previousAttachment.getUrl());
 
-                    String updatedUrl = updateInS3(multiPartFile, objectKeyName);
+                    String updatedUrl = updateInS3(multiPartFile, file.getName(),objectKeyName);
                     if (updatedUrl != null) {
                         previousAttachment.setUrl(updatedUrl);
                         attachmentDao.save(previousAttachment);
@@ -215,11 +224,9 @@ public class S3AttachmentService {
 //        return false;
 //    }
 
-    public String uploadToS3(MultipartFile fileUrl) {
+    public String uploadToS3(MultipartFile fileUrl,String fileName) {
 
         String fileObjectKeyName = FilenameUtils.getName(fileUrl.getName());
-
-        String fileName = fileUrl.getName();
 
         try {
 
@@ -258,10 +265,10 @@ public class S3AttachmentService {
         return null;
     }
 
-    public String updateInS3(MultipartFile attachments, String oldObjectKeyName) {
+    public String updateInS3(MultipartFile attachments, String fileName,String oldObjectKeyName) {
 
         if (deleteInS3(oldObjectKeyName)) {
-            return uploadToS3(attachments);
+            return uploadToS3(attachments,fileName);
         }
 
         return null;
