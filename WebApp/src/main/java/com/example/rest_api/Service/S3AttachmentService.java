@@ -84,12 +84,6 @@ public class S3AttachmentService {
                 Transactions transaction = transactionsDao.findTransactionAttachedToUser(transcation_id, user);
 
                 File file = new File(multiPartFile.getOriginalFilename());
-                file.setWritable(true);
-                FileOutputStream fos = new FileOutputStream("/opt/tomcat/uploads/"+file);
-//                FileOutputStream fos = new FileOutputStream(file);
-                fos.write(multiPartFile.getBytes());
-                fos.close();
-
 
                 //File file = new File(attachment.getUrl());
                 String extension = FilenameUtils.getExtension(file.getName());
@@ -99,6 +93,13 @@ public class S3AttachmentService {
                     return responseService.generateResponse(HttpStatus.UNAUTHORIZED,
                             "{\"Response\":\"Enter file with jpeg, jpg or png extension only\"}");
                 }
+
+                file.setWritable(true);
+                FileOutputStream fos = new FileOutputStream("/opt/tomcat/uploads/"+file);
+//                FileOutputStream fos = new FileOutputStream(file);
+                fos.write(multiPartFile.getBytes());
+                fos.close();
+
 
                 String newPath = uploadToS3(multiPartFile, file.getName());
 
@@ -226,7 +227,7 @@ public class S3AttachmentService {
 
     public String uploadToS3(MultipartFile fileUrl,String fileName) {
 
-        String fileObjectKeyName = FilenameUtils.getName(fileUrl.getName());
+        String fileObjectKeyName = FilenameUtils.getName(fileName);
 
         try {
 
