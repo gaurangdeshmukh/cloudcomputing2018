@@ -12,7 +12,7 @@ then
   echo "There is no Stack available to delete" 
   exit 1
 else
-  echo "Enter Application stack Name to be deleted from the list"
+  echo "Enter CICD stack Name to be deleted from the list"
   echo $StackList
   read StackName
   echo "Deleting the stack $StackName"
@@ -26,29 +26,30 @@ fi
 
 
 
-#Attachments s3 bucket
+#Code-deploy bucket
 
-echo "Checking the Attachments S3 Bucket"
+echo "Checking the Code-deploy S3 Bucket First"
 
 HostedZoneName=$(aws route53 list-hosted-zones --query HostedZones[].{Name:Name} --output text)
 com="csye6225.com"
-BucketName=$HostedZoneName$com
+start="code-deploy."
+BucketName=$start$HostedZoneName$com
 echo $BucketName
 
 S3Deletion=$(aws s3 ls s3://$BucketName)
 echo $S3Deletion
 if [[ -z "$S3Deletion" ]]
 then
-  echo "$HostedZoneName$com is empty. Deleting stack"
+  echo "$start$HostedZoneName$com is empty. Deleting stack"
   break
 else
-  echo $HostedZoneName$com
+  echo $BucketName
   echo "Without file deletion. S3 bucket cannot be deleted"
   echo "Do you want to delete the file then chose - Yes/No"
   read response
-  if [[ "$response" == "yes" || "$response" == "Yes" ]]
+  if [[ "$response" == "Yes" ]]
   then
-    delete=$(aws s3 rm s3://$BucketName ----recursive)
+    delete=$(aws s3 rm s3://$BucketName --recursive)
     echo $delete
   else
     exit 1
@@ -76,7 +77,7 @@ fi
 Success=$(aws cloudformation wait stack-delete-complete --stack-name $StackName)
 if [[ -z "$Success" ]]
 then
-  echo "$StackName Application stack is deleted successfully"
+  echo "$StackName CICD stack is deleted successfully"
 else
   echo "Deletion of $StackName stack failed."
   echo "$Success"
