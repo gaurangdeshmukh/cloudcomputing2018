@@ -84,8 +84,6 @@ public class S3AttachmentService {
                 Transactions transaction = transactionsDao.findTransactionAttachedToUser(transcation_id, user);
 
                 File file = new File(multiPartFile.getOriginalFilename());
-
-                //File file = new File(attachment.getUrl());
                 String extension = FilenameUtils.getExtension(file.getName());
 
                 if (!extension.equals("jpeg") && !extension.equals("jpg") && !extension.equals("png")) {
@@ -95,8 +93,7 @@ public class S3AttachmentService {
                 }
 
                 file.setWritable(true);
-//                FileOutputStream fos = new FileOutputStream("/opt/tomcat/uploads/"+file);
-                FileOutputStream fos = new FileOutputStream(file);
+                FileOutputStream fos = new FileOutputStream("/opt/tomcat/uploads/"+file);
                 fos.write(multiPartFile.getBytes());
                 fos.close();
 
@@ -154,8 +151,7 @@ public class S3AttachmentService {
                     }
 
                     file.setWritable(true);
-  //                  FileOutputStream fos = new FileOutputStream("/opt/tomcat/uploads/"+file);
-                    FileOutputStream fos = new FileOutputStream(file);
+                    FileOutputStream fos = new FileOutputStream("/opt/tomcat/uploads/"+file);
                     fos.write(multiPartFile.getBytes());
                     fos.close();
 
@@ -213,18 +209,6 @@ public class S3AttachmentService {
     }
 
 
-//    public boolean ifAttachmentExists(String id) {
-//        Optional<Attachments> optionalAttachments = attachmentDao.findById(id);
-//        try {
-//            Attachments attachments = optionalAttachments.get();
-//            if (attachments != null) {
-//                return true;
-//            }
-//        } catch (Exception e) {
-//            return false;
-//        }
-//        return false;
-//    }
 
     public String uploadToS3(MultipartFile fileUrl,String fileName) {
 
@@ -246,13 +230,10 @@ public class S3AttachmentService {
                 return null;
             }
 
-//            PutObjectRequest request = new PutObjectRequest(bucketName, fileObjectKeyName, new File(fileName));
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(fileUrl.getSize());
             metadata.setContentType("image/" + FilenameUtils.getExtension(fileName));
             metadata.addUserMetadata("x-amz-meta-title", "Your Profile Pic");
-//            request.setMetadata(metadata);
-//            s3Client.putObject(request);
             PutObjectRequest request = new PutObjectRequest(bucketName, fileObjectKeyName, fileUrl.getInputStream(),metadata);
             s3Client.putObject(request);
 
