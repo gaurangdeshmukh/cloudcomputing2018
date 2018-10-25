@@ -98,7 +98,7 @@ public class S3AttachmentService {
                 fos.close();
 
 
-                String newPath = uploadToS3(multiPartFile, file.getName());
+                String newPath = uploadToS3(multiPartFile, file.getName(),user.getUsername());
 
                 if (newPath == null) {
                     return responseService.generateResponse(HttpStatus.UNAUTHORIZED,
@@ -157,7 +157,7 @@ public class S3AttachmentService {
 
                     String objectKeyName = FilenameUtils.getName(previousAttachment.getUrl());
 
-                    String updatedUrl = updateInS3(multiPartFile, file.getName(),objectKeyName);
+                    String updatedUrl = updateInS3(multiPartFile, file.getName(),objectKeyName, user.getUsername());
                     if (updatedUrl != null) {
                         previousAttachment.setUrl(updatedUrl);
                         attachmentDao.save(previousAttachment);
@@ -210,12 +210,12 @@ public class S3AttachmentService {
 
 
 
-    public String uploadToS3(MultipartFile fileUrl,String fileName) {
+    public String uploadToS3(MultipartFile fileUrl,String fileName, String username) {
 
         Random random = new Random();
         int randomNumber = random.nextInt(100000);
 
-        String fileObjectKeyName = String.valueOf(randomNumber)+FilenameUtils.getName(fileName);
+        String fileObjectKeyName = username +"_"+String.valueOf(randomNumber)+"_"+FilenameUtils.getName(fileName);
 
         try {
 
@@ -251,10 +251,10 @@ public class S3AttachmentService {
         return null;
     }
 
-    public String updateInS3(MultipartFile attachments, String fileName,String oldObjectKeyName) {
+    public String updateInS3(MultipartFile attachments, String fileName,String oldObjectKeyName, String username) {
 
         if (deleteInS3(oldObjectKeyName)) {
-            return uploadToS3(attachments,fileName);
+            return uploadToS3(attachments,fileName,username);
         }
 
         return null;
