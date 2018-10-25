@@ -316,6 +316,7 @@ public class S3AttachmentService {
 
         }catch(Exception e){
             System.out.println("Finding bucket error....");
+            e.printStackTrace();
         }
 
 
