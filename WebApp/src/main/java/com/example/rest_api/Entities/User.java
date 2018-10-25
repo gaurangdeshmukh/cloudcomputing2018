@@ -18,13 +18,13 @@ public class User {
 
 
     User(){
-        transactions = new ArrayList<>();
+        transactions = new ArrayList<Transactions>();
     }
 
     public User(String username, String password) {
         this.username = username;
         this.password = password;
-        transactions = new ArrayList<>();
+        transactions = new ArrayList<Transactions>();
     }
 
     public String getUsername() {
