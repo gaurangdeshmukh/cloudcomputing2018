@@ -44,7 +44,7 @@ deploy:
     secret_access_key: $access_secret_key
     acl: public_read
     on:
-      branch: assignment5/6
+      branch: master
    
   - provider: codedeploy
     access_key_id: $access_key_id
@@ -57,4 +57,4 @@ deploy:
     region: us-east-1
     wait-until-deployed: true
     on:
-      branch: assignment5/6
+      branch: master
