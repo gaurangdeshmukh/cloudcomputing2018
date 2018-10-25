@@ -100,7 +100,7 @@ public class S3AttachmentService {
                             "{\"Response\":\"Enter file with jpeg, jpg or png extension only\"}");
                 }
 
-                String newPath = uploadToS3(file);
+                String newPath = uploadToS3(multiPartFile);
 
                 if (newPath == null) {
                     return responseService.generateResponse(HttpStatus.UNAUTHORIZED,
@@ -150,7 +150,7 @@ public class S3AttachmentService {
 
                     String objectKeyName = FilenameUtils.getName(previousAttachment.getUrl());
 
-                    String updatedUrl = updateInS3(file, objectKeyName);
+                    String updatedUrl = updateInS3(multiPartFile, objectKeyName);
                     if (updatedUrl != null) {
                         previousAttachment.setUrl(updatedUrl);
                         attachmentDao.save(previousAttachment);
@@ -215,7 +215,7 @@ public class S3AttachmentService {
 //        return false;
 //    }
 
-    public String uploadToS3(File fileUrl) {
+    public String uploadToS3(MultipartFile fileUrl) {
 
         String fileObjectKeyName = FilenameUtils.getName(fileUrl.getName());
 
@@ -237,11 +237,14 @@ public class S3AttachmentService {
                 return null;
             }
 
-            PutObjectRequest request = new PutObjectRequest(bucketName, fileObjectKeyName, new File(fileName));
+//            PutObjectRequest request = new PutObjectRequest(bucketName, fileObjectKeyName, new File(fileName));
             ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(fileUrl.getSize());
             metadata.setContentType("image/" + FilenameUtils.getExtension(fileName));
             metadata.addUserMetadata("x-amz-meta-title", "Your Profile Pic");
-            request.setMetadata(metadata);
+//            request.setMetadata(metadata);
+//            s3Client.putObject(request);
+            PutObjectRequest request = new PutObjectRequest(bucketName, fileObjectKeyName, fileUrl.getInputStream(),metadata);
             s3Client.putObject(request);
 
             //Get url
@@ -255,7 +258,7 @@ public class S3AttachmentService {
         return null;
     }
 
-    public String updateInS3(File attachments, String oldObjectKeyName) {
+    public String updateInS3(MultipartFile attachments, String oldObjectKeyName) {
 
         if (deleteInS3(oldObjectKeyName)) {
             return uploadToS3(attachments);
