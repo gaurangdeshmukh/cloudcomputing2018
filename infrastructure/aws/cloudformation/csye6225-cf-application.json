@@ -495,6 +495,14 @@
                         "CidrIp": {
                             "Ref": "SSHLocation"
                         }
+                    },
+                    {
+                        "IpProtocol": "8080",
+                        "FromPort": "8080",
+                        "ToPort": "8080",
+                        "CidrIp": {
+                            "Ref": "SSHLocation"
+                        }
                     }
                 ],
                 "Tags": [
