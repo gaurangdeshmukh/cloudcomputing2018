@@ -153,14 +153,33 @@
                 "PolicyDocument": {
                     "Version": "2012-10-17",
                     "Statement": [
-                        {
+                        {   
+                            "Sid": "CodeToListBucket",
                             "Effect": "Allow",
                             "Action": [
-                                "s3:List*","s3:PutObject*"
+                                "s3:List*"
                               ],
-                            "Resource": "*"
+                            "Resource": "arn:aws:s3:::*"
+                        },
+                        {
+                            "Sid": "CodeToPutObjectInS3",
+                            "Effect": "Allow",
+                            "Action": [
+                                "s3:PutObject*",
+                                "s3:DeleteObject*"
+                              ],
+                            "Resource": {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        "arn:aws:s3:::",
+                                        {
+                                            "Ref": "AttachBucket"
+                                        },"/*"
+                                    ]
+                                ]
+                            }
                         }
-                        
                     ]
                 },
                 "Roles": [
