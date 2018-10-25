@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.net.URL;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -193,7 +192,14 @@ public class S3AttachmentService {
 
         String fileObjectKeyName = FilenameUtils.getName(fileUrl);
 
+<<<<<<< Updated upstream
         String fileName = fileUrl;
+=======
+        Random randomNumber = new Random();
+        int random = randomNumber.nextInt();
+
+        String fileObjectKeyName = FilenameUtils.getName(fileName);
+>>>>>>> Stashed changes
 
         try {
 
@@ -215,7 +221,11 @@ public class S3AttachmentService {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType("image/" + FilenameUtils.getExtension(fileUrl));
             metadata.addUserMetadata("x-amz-meta-title", "Your Profile Pic");
+<<<<<<< Updated upstream
             request.setMetadata(metadata);
+=======
+            PutObjectRequest request = new PutObjectRequest(bucketName, String.valueOf(random)+fileObjectKeyName, fileUrl.getInputStream(),metadata);
+>>>>>>> Stashed changes
             s3Client.putObject(request);
 
             //Get url
