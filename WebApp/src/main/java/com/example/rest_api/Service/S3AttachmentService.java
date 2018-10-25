@@ -95,8 +95,8 @@ public class S3AttachmentService {
                 }
 
                 file.setWritable(true);
-                FileOutputStream fos = new FileOutputStream("/opt/tomcat/uploads/"+file);
-//                FileOutputStream fos = new FileOutputStream(file);
+//                FileOutputStream fos = new FileOutputStream("/opt/tomcat/uploads/"+file);
+                FileOutputStream fos = new FileOutputStream(file);
                 fos.write(multiPartFile.getBytes());
                 fos.close();
 
@@ -154,7 +154,8 @@ public class S3AttachmentService {
                     }
 
                     file.setWritable(true);
-                    FileOutputStream fos = new FileOutputStream("/opt/tomcat/uploads/"+file);
+  //                  FileOutputStream fos = new FileOutputStream("/opt/tomcat/uploads/"+file);
+                    FileOutputStream fos = new FileOutputStream(file);
                     fos.write(multiPartFile.getBytes());
                     fos.close();
 
