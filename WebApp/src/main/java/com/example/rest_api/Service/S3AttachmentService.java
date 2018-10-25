@@ -85,7 +85,7 @@ public class S3AttachmentService {
 
                 File file = new File(multiPartFile.getOriginalFilename());
                 String extension = FilenameUtils.getExtension(file.getName());
-
+                extension.toLowerCase();
                 if (!extension.equals("jpeg") && !extension.equals("jpg") && !extension.equals("png")) {
                     System.out.print(extension);
                     return responseService.generateResponse(HttpStatus.UNAUTHORIZED,
@@ -143,7 +143,7 @@ public class S3AttachmentService {
                     File file = new File(multiPartFile.getOriginalFilename());
 
                     String extension = FilenameUtils.getExtension(file.getName());
-
+                    extension.toLowerCase();
                     if (!extension.equals("jpeg") && !extension.equals("jpg") && !extension.equals("png")) {
                         System.out.print(extension);
                         return responseService.generateResponse(HttpStatus.UNAUTHORIZED,
@@ -212,7 +212,10 @@ public class S3AttachmentService {
 
     public String uploadToS3(MultipartFile fileUrl,String fileName) {
 
-        String fileObjectKeyName = FilenameUtils.getName(fileName);
+        Random random = new Random();
+        int randomNumber = random.nextInt();
+
+        String fileObjectKeyName = String.valueOf(randomNumber)+FilenameUtils.getName(fileName);
 
         try {
 

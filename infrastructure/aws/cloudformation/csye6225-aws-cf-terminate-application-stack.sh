@@ -48,7 +48,7 @@ else
   read response
   if [[ "$response" == "yes" || "$response" == "Yes" ]]
   then
-    delete=$(aws s3 rm s3://$BucketName ----recursive)
+    delete=$(aws s3 rm s3://$BucketName --recursive)
     echo $delete
   else
     exit 1
