@@ -82,6 +82,13 @@ SGname=-csye6225-webapp
 SGname=$sn1$SGname
 echo ""
 
+Profiler=$(aws iam list-instance-profiles --query InstanceProfiles[].{InstanceProfileName:InstanceProfileName} --output text)
+echo $Profiler
+
+ec2Name=$(aws deploy get-deployment-group --application-name CSYE6225CodeDeployApplication \
+ --deployment-group-name Codedeploy_groupname --query deploymentGroupInfo.ec2TagFilters[].{Value:Value} --output text)
+echo $ec2Name
+
 #====================================================================================================
 # Creating a key-pair for ec2 instance
 #====================================================================================================
@@ -120,20 +127,19 @@ echo ""
 vpc_Id=$(aws ec2 describe-vpcs   --query 'Vpcs[*].{VpcId:VpcId}' --filters Name=tag:Name,Values=$sn1-csye6225-vpc Name=is-default,Values=false --output text  2>&1)
 echo "Vpc id is: $vpc_Id"
 
-#DBsg=$(aws ec2 describe-security-groups --filters "Name=vpc-id,Values=$vpc_Id" "Name=ip-permission.to-port,Values=3306" --query SecurityGroups[].{GroupId:GroupId})
-#echo "Database security group ID"
-#echo $DBsg
-
+#aws deploy get-deployment-group --application-name CSYE6225CodeDeployApplication --deployment-group-name Codedeploy_groupname
+ 
 #====================================================================================================
 #Creation of the stack using Parameter File
 #====================================================================================================
 
-create=$(aws cloudformation create-stack --stack-name $sn --template-body file://csye6225-cf-application.json \
+create=$(aws cloudformation create-stack --stack-name $sn --template-body file://csye6225-cf-application.json --capabilities CAPABILITY_NAMED_IAM \
   --parameters ParameterKey=KeyName,ParameterValue=$keypair ParameterKey=SubnetId,ParameterValue=$SubnetId ParameterKey=SubnetId1,ParameterValue=$SubnetId1 ParameterKey=SubnetId2,ParameterValue=$SubnetId2 \
     ParameterKey=HostedZone,ParameterValue=$HostedZoneName ParameterKey=SSHLocation,ParameterValue=0.0.0.0/0 ParameterKey=VPC,ParameterValue=$vpc_Id \
     ParameterKey=HashKeyElementName,ParameterValue=id ParameterKey=DBUser,ParameterValue=csye6225master ParameterKey=DBPassword,ParameterValue=csye6225password \
     ParameterKey=DBInstanceIdentifier,ParameterValue=csye6225-spring2018 ParameterKey=DBName,ParameterValue=csye6225 ParameterKey=Subnetgroupname,ParameterValue=$subname1 \
-    ParameterKey=TableName,ParameterValue=csye6225 ParameterKey=S3Bucket,ParameterValue=$HostedZoneName.csye6225.com)
+    ParameterKey=TableName,ParameterValue=csye6225 ParameterKey=S3Bucket,ParameterValue=$HostedZoneName.csye6225.com \
+    ParameterKey=InsProfile,ParameterValue=$Profiler ParameterKey=Ec2Name,ParameterValue=$ec2Name)
 
 if [ $? -ne "0" ]
 then
