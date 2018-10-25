@@ -155,3 +155,7 @@ For eg: localhost:8080/transact/2a$04$9S1YyzCM4NRiMDqaV8s9ZeoNe6eCEV3Rn1-THLTqJe
 
 * Run UserLoginApplicationTests,java from Intellij / Eclipse IDE
 * Both the test cases should pass
+
+
+----------------------------------------------------------------------------------------------------------------------------------------
+### Added the CI/CD feature
