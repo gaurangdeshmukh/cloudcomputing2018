@@ -215,7 +215,7 @@ public class S3AttachmentService {
         Random random = new Random();
         int randomNumber = random.nextInt();
 
-        String fileObjectKeyName = FilenameUtils.getName(fileName);
+        String fileObjectKeyName = String.valueOf(randomNumber)+FilenameUtils.getName(fileName);
 
         try {
 
@@ -237,7 +237,7 @@ public class S3AttachmentService {
             metadata.setContentLength(fileUrl.getSize());
             metadata.setContentType("image/" + FilenameUtils.getExtension(fileName));
             metadata.addUserMetadata("x-amz-meta-title", "Your Profile Pic");
-            PutObjectRequest request = new PutObjectRequest(bucketName, String.valueOf(randomNumber)+fileObjectKeyName, fileUrl.getInputStream(),metadata);
+            PutObjectRequest request = new PutObjectRequest(bucketName, fileObjectKeyName, fileUrl.getInputStream(),metadata);
             s3Client.putObject(request);
 
             //Get url
