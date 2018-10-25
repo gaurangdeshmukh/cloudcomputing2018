@@ -212,7 +212,7 @@ public class S3AttachmentService {
 
     public String uploadToS3(MultipartFile fileUrl,String fileName) {
 
-        Random random = new Random();
+        Random random = new Random(100000);
         int randomNumber = random.nextInt();
 
         String fileObjectKeyName = String.valueOf(randomNumber)+FilenameUtils.getName(fileName);
