@@ -33,6 +33,8 @@ after_success:
   - cd ..
   - pwd
   - ls -al
+  - cd infrastructure/aws
+  - zip -r config.json
 
 deploy:
   - provider: s3
