@@ -33,18 +33,6 @@ after_success:
   - cd ..
   - pwd
   - ls -al
-  - cd infrastructure/aws/cloudwatch/*.json
-  - zip -r config-${TRAVIS_JOB_NUMBER}.zip
-  - ls -al
-  - mv config-${TRAVIS_JOB_NUMBER}.zip codedeploy_artifact/
-  - ls -al
-  - pwd
-  - cd codedeploy_artifact
-  - ls -al
-  - pwd
-  - cd ..
-  - pwd
-  - ls -al
 
 deploy:
   - provider: s3
@@ -63,19 +51,6 @@ deploy:
     secret_access_key: $access_secret_key
     bucket: $s3_bucket
     key: csye6225-web-app-${TRAVIS_JOB_NUMBER}.zip
-    bundle_type: zip
-    application: $application
-    deployment_group: $deployment_group
-    region: us-east-1
-    wait-until-deployed: true
-    on:
-      branch: master
-      
-  - provider: codedeploy
-    access_key_id: $access_key_id
-    secret_access_key: $access_secret_key
-    bucket: $s3_bucket
-    key: config-${TRAVIS_JOB_NUMBER}.zip
     bundle_type: zip
     application: $application
     deployment_group: $deployment_group
