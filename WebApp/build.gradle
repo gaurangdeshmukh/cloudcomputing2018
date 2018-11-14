@@ -30,7 +30,14 @@ dependencies {
     compile group: 'com.amazonaws', name: 'aws-java-sdk-bom', version:'1.11.327'
     compile group: 'com.amazonaws', name: 'aws-java-sdk-s3', version:'1.11.425'
     compile group: 'commons-fileupload', name: 'commons-fileupload', version:'1.3.3'
+    // https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-sns
+    compile group: 'com.amazonaws', name: 'aws-java-sdk-sns', version: '1.11.442'
+    // https://mvnrepository.com/artifact/com.timgroup/java-statsd-client
+    compile group: 'com.timgroup', name: 'java-statsd-client', version: '3.1.0'
+
+
     runtime group: 'mysql', name: 'mysql-connector-java', version:'5.1.47'
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version:'2.0.5.RELEASE'
     testCompile group: 'org.skyscreamer', name: 'jsonassert', version:'1.5.0'
+    
 }
