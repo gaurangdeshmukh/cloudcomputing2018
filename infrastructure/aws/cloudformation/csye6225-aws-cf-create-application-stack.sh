@@ -46,9 +46,23 @@ echo ""
 
 SubnetId=$(aws ec2 describe-subnets --filters "Name=tag:Name,Values=$subname"  --query 'Subnets[*].SubnetId' --output text 2>&1)
 
-echo "Public Subnet id :"
+echo "Public Subnet id 1:"
 echo $SubnetId
 
+#-----------------------------------------------------------------------------------------------------
+subnameA="-csye6225-Pubsubnet2"
+
+subnameA=$sn1$subnameA
+
+echo "Public Subnet name 2:"
+echo $subnameA
+
+echo ""
+
+SubnetIdA=$(aws ec2 describe-subnets --filters "Name=tag:Name,Values=$subnameA"  --query 'Subnets[*].SubnetId' --output text 2>&1)
+
+echo "Public Subnet id 2:"
+echo $SubnetIdA
 
 #====================================================================================================
 # Obtaining Private Subnet Id for RDS Instance
@@ -127,8 +141,6 @@ echo ""
 vpc_Id=$(aws ec2 describe-vpcs   --query 'Vpcs[*].{VpcId:VpcId}' --filters Name=tag:Name,Values=$sn1-csye6225-vpc Name=is-default,Values=false --output text  2>&1)
 echo "Vpc id is: $vpc_Id"
 
-#aws deploy get-deployment-group --application-name CSYE6225CodeDeployApplication --deployment-group-name Codedeploy_groupname
- 
 #====================================================================================================
 #Creation of the stack using Parameter File
 #====================================================================================================
@@ -136,10 +148,10 @@ echo "Vpc id is: $vpc_Id"
 create=$(aws cloudformation create-stack --stack-name $sn --template-body file://csye6225-cf-application.json --capabilities CAPABILITY_NAMED_IAM \
   --parameters ParameterKey=KeyName,ParameterValue=$keypair ParameterKey=SubnetId,ParameterValue=$SubnetId ParameterKey=SubnetId1,ParameterValue=$SubnetId1 ParameterKey=SubnetId2,ParameterValue=$SubnetId2 \
     ParameterKey=HostedZone,ParameterValue=$HostedZoneName ParameterKey=SSHLocation,ParameterValue=0.0.0.0/0 ParameterKey=VPC,ParameterValue=$vpc_Id \
-    ParameterKey=HashKeyElementName,ParameterValue=id ParameterKey=DBUser,ParameterValue=csye6225master ParameterKey=DBPassword,ParameterValue=csye6225password \
+    ParameterKey=HashKeyElementName,ParameterValue=EmailId ParameterKey=HashKeyElementName2,ParameterValue=Token ParameterKey=DBUser,ParameterValue=csye6225master \
     ParameterKey=DBInstanceIdentifier,ParameterValue=csye6225-spring2018 ParameterKey=DBName,ParameterValue=csye6225 ParameterKey=Subnetgroupname,ParameterValue=$subname1 \
     ParameterKey=TableName,ParameterValue=csye6225 ParameterKey=S3Bucket,ParameterValue=$HostedZoneName.csye6225.com \
-    ParameterKey=InsProfile,ParameterValue=$Profiler ParameterKey=Ec2Name,ParameterValue=$ec2Name)
+    ParameterKey=InsProfile,ParameterValue=$Profiler ParameterKey=Ec2Name,ParameterValue=$ec2Name ParameterKey=DBPassword,ParameterValue=csye6225password)
 
 if [ $? -ne "0" ]
 then
@@ -158,9 +170,9 @@ Success=$(aws cloudformation wait stack-create-complete --stack-name $sn)
 
 if [[ -z "$Success" ]]
 then
-  echo "$StackName stack is created successfully. Printing output..."
+  echo "$sn stack is created successfully. Printing output..."
 else
-  echo "Creation of $StackName stack failed. Printing error and exiting....."
+  echo "Creation of $sn stack failed. Printing error and exiting....."
   echo "$Success"
   exit 1
 fi

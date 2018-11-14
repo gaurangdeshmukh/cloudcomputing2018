@@ -54,6 +54,14 @@
             "MaxLength": "2048",
             "ConstraintDescription": "must contain only alphanumberic characters"
         },
+        "HashKeyElementName2": {
+            "Description": "HashType PrimaryKey Name",
+            "Type": "String",
+            "AllowedPattern": "[a-zA-Z0-9]*",
+            "MinLength": "1",
+            "MaxLength": "2048",
+            "ConstraintDescription": "must contain only alphanumberic characters"
+        },
         "HashKeyElementType": {
             "Description": "HashType PrimaryKey Type",
             "Type": "String",
@@ -230,21 +238,37 @@
                         "Fn::Join": [
                             "\n",
                             [
-                                "#!/bin/bash -xe ",
+                                "#!/bin/bash",
                                 "sudo su",
+                                "yum update -y",
                                 "yum install httpd -y",
                                 "systemctl enable httpd.service",
                                 "systemctl start httpd.service",
-                                "yum update -y",
+                                "#yum install epel-release –y",
+                                "#yum install python-pip –y",
+                                "#pip install awscli",
                                 "yum install ruby -y",
                                 "yum install wget -y",
                                 "yum install python -y",
+                                "sudo yum install unzip -y",
                                 "wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install",
                                 "chmod +x ./install",
                                 "./install auto",
                                 "service codedeploy-agent start",
                                 "mkdir -p /var/awslogs/etc/",
-                                "ar/awslogs/etc/ && sudo wget https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py",
+                                "cd /var/awslogs/etc/",
+                                "wget https://s3.amazonaws.com/amazoncloudwatch-agent/linux/amd64/latest/AmazonCloudWatchAgent.zip",
+                                "unzip AmazonCloudWatchAgent.zip",
+                                "chmod +x install.sh",
+                                "sh install.sh",
+                                "mkdir -p /usr/share/collectd",
+                                "cd /usr/share/collectd",
+                                "touch types.db",
+                                "cd /opt/aws/amazon-cloudwatch-agent/bin/",
+                                "touch config.json",
+                                "echo '{\"agent\": {\"metrics_collection_interval\": 10,\"logfile\": \"/var/logs/amazon-cloudwatch-agent.log\"},\"logs\": {\"logs_collected\": {\"files\": {\"collect_list\": [{\"file_path\": \"/opt/tomcat/logs/catalina.out\",\"log_group_name\": \"csye6225_fall2018\",\"log_stream_name\": \"webapp\",\"timestamp_format\": \"%H:%M:%S %y %b %-d\"}]}}},\"metrics\": {\"metrics_collected\": {\"statsd\": {\"service_address\": \":8125\",\"metrics_collection_interval\": 10,\"metrics_aggregation_interval\": 0}}}}' >> config.json",
+                                "cd /opt/aws/amazon-cloudwatch-agent/bin",
+                                "./amazon-cloudwatch-agent-ctl -m ec2 -a fetch-config -c file:config.json -s",
                                 "yum install ruby ntp wget java-1.8.0-openjdk-devel -y",
                                 "systemctl start ntpd",
                                 "systemctl enable ntpd",
@@ -309,8 +333,7 @@
                                 "echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.username=csye6225master\"'  >> setenv.sh",
                                 "echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.password=csye6225password\"'  >> setenv.sh",
                                 "#systemctl daemon-reload",
-                                "#systemctl start cloudwatch.service",
-                                "#systemctl enable cloudwatch.service",
+                                "systemctl start amazon-cloudwatch-agent.service",
                                 "systemctl enable tomcat.service",
                                 "systemctl start tomcat.service",
                                 "yum install mariadb mariadb-server -y",
@@ -341,6 +364,14 @@
                         "AttributeType": {
                             "Ref": "HashKeyElementType"
                         }
+                    },
+                    {
+                        "AttributeName": {
+                            "Ref": "HashKeyElementName2"
+                        },
+                        "AttributeType": {
+                            "Ref": "HashKeyElementType"
+                        }
                     }
                 ],
                 "KeySchema": [
@@ -349,6 +380,12 @@
                             "Ref": "HashKeyElementName"
                         },
                         "KeyType": "HASH"
+                    },
+                    {
+                        "AttributeName": {
+                            "Ref": "HashKeyElementName2"
+                        },
+                        "KeyType": "RANGE"
                     }
                 ],
                 "ProvisionedThroughput": {
@@ -358,6 +395,10 @@
                     "WriteCapacityUnits": {
                         "Ref": "WriteCapacityUnits"
                     }
+                },
+                "TimeToLiveSpecification": {
+                    "AttributeName": "TimeTolive",
+                    "Enabled": "TRUE"
                 },
                 "TableName": "csye6225"
             }
@@ -497,10 +538,10 @@
                         }
                     },
                     {
-                        "IpProtocol":"tcp",
-                        "FromPort":"8080",
-                        "ToPort":"8080",
-                        "CidrIp":{
+                        "IpProtocol": "tcp",
+                        "FromPort": "8080",
+                        "ToPort": "8080",
+                        "CidrIp": {
                             "Ref": "SSHLocation"
                         }
                     }

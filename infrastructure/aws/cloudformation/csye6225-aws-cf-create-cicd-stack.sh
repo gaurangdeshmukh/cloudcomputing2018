@@ -41,6 +41,34 @@ com="csye6225.com"
 BucketName=$HostedZoneName1$com
 
 #====================================================================================================
+#Creation of the Lambda bucket and uploading file
+#====================================================================================================
+echo "Validating/ Creating a bucket for lambda"
+echo ""
+Validate=$(aws s3 ls | grep lambda)
+if [[ -z "$Validate" ]]
+then
+  echo "lambda.$HostedZoneName1$com does not exist. Creating lambda.$HostedZoneName1$com bucket"
+  echo ""
+  aws s3 mb s3://lambda.$HostedZoneName1$com --region us-east-1
+  echo ""
+  aws s3 cp ./lamdafunction-1.0-SNAPSHOT.zip s3://lambda.$HostedZoneName1$com
+  echo ""
+else
+  echo "lambda.$HostedZoneName1$com does exist. Checking file is present or not"
+  echo ""
+  File=$(aws s3 ls s3://lambda.$HostedZoneName1$com)
+  if [[ -z "$File" ]]
+  then
+    echo "Bucket is empty. Please uplod your lambda file. Uploading"
+    echo ""
+    aws s3 cp ./lamdafunction-1.0-SNAPSHOT.zip s3://lambda.$HostedZoneName1$com
+  else
+    echo "File is not empty. File is present"
+  fi
+fi
+
+#====================================================================================================
 #Creation of the stack using Parameter File
 #====================================================================================================
 export TravisUser=travis
