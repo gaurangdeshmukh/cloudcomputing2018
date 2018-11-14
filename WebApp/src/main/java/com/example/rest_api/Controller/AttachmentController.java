@@ -1,10 +1,15 @@
 package com.example.rest_api.Controller;
 
 import com.example.rest_api.Entities.Attachments;
+import com.example.rest_api.Entities.StatsDConfig;
 import com.example.rest_api.Service.AttachmentService;
 import com.example.rest_api.Service.ResponseService;
 import com.example.rest_api.Service.S3AttachmentService;
 import com.example.rest_api.Service.TransactionService;
+import com.timgroup.statsd.StatsDClient;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
@@ -20,10 +25,20 @@ public class AttachmentController {
     //For local attachments
     @Autowired
     AttachmentService attachmentService;
+
+    @Autowired
+    StatsDClient statsDClient;
+
+    final Logger logger = LoggerFactory.getLogger(AttachmentController.class);
+
     /*--------------------------------------- Services for local attachments -----------------------------*/
     @GetMapping("/transact/{transaction_id}/attachments")
     public ResponseEntity getAllAttachments(@RequestHeader(value="Authorization", defaultValue = "NoAuth")String Auth,
                                             @PathVariable(value = "transaction_id")String transactionId){
+        
+        //Incrementing time counter
+
+        statsDClient.increment("attachment.get");
 
         if(!Auth.equals("NoAuth") && !transactionId.isEmpty()){
             List<Attachments> attachmentsList = attachmentService.getAllAttachments(Auth,transactionId);
@@ -41,6 +56,8 @@ public class AttachmentController {
     public ResponseEntity addAttachment(@RequestHeader(value="Authorization",defaultValue = "NoAuth")String auth,
                                         @PathVariable(value="transaction_id")String transactionId,
                                         @RequestBody Attachments attachments){
+        
+        statsDClient.increment("attachment.post");
 
         if(!auth.equals("NoAuth") && !transactionId.isEmpty()){
            return attachmentService.addAttachment(auth,transactionId,attachments);
@@ -54,6 +71,8 @@ public class AttachmentController {
                                             @PathVariable(value="transaction_id")String transactionId,
                                             @PathVariable(value="attachment_id")String attachmentId,
                                             @RequestBody Attachments attachment){
+        
+        statsDClient.increment("attachment.update");
 
         if(!auth.equals("NoAuth") && !transactionId.isEmpty() && attachment != null && !attachmentId.isEmpty()){
             return attachmentService.updateAttachment(auth,transactionId,attachment,attachmentId);
@@ -66,6 +85,8 @@ public class AttachmentController {
     public ResponseEntity deleteAttachment(@RequestHeader(value="Authorization",defaultValue = "NoAuth")String auth,
                                            @PathVariable(value="transaction_id")String transactionId,
                                            @PathVariable(value="attachment_id")String attachmentId){
+       
+        statsDClient.increment("attachment.update");
 
         if(!auth.equals("NoAuth") && !transactionId.isEmpty() && !attachmentId.isEmpty()){
             if(attachmentService.deleteAttachment(auth,transactionId,attachmentId)){

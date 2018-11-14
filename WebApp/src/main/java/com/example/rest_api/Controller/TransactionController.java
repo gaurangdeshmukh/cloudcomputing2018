@@ -4,6 +4,10 @@ import com.example.rest_api.Dao.TransactionsDao;
 import com.example.rest_api.Entities.Transactions;
 import com.example.rest_api.Service.ResponseService;
 import com.example.rest_api.Service.TransactionService;
+import com.timgroup.statsd.StatsDClient;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +25,16 @@ public class TransactionController {
     @Autowired
     ResponseService responseService;
 
+    @Autowired
+    StatsDClient statsDclient;
+
+    final Logger logger = LoggerFactory.getLogger(TransactionController.class);
+
+
     @GetMapping(value="/transact/")
     public ResponseEntity getTransaction(@RequestHeader(value="Authorization", defaultValue = "No Auth")String auth){
+
+        statsDclient.increment("transaction.get");
 
         if(auth.isEmpty() || auth.equals("NoValueFound")){
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);
@@ -41,6 +53,8 @@ public class TransactionController {
     public ResponseEntity createTransaction(@RequestHeader(value="Authorization",
             defaultValue = "No Auth")String auth, @RequestBody Transactions transaction){
 
+        statsDclient.increment("transaction.create");
+
         if(auth.isEmpty() || auth.equals("NoValueFound")){
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         }
@@ -57,11 +71,13 @@ public class TransactionController {
         return new ResponseEntity(HttpStatus.UNAUTHORIZED);
 
     }
-
+    
     @PutMapping("/transact/update/{transaction_id}")
     public ResponseEntity updateTransaction(@RequestHeader(value="Authorization") String auth,
                                             @PathVariable(value="transaction_id")String transaction_id,
                                             @RequestBody Transactions transaction){
+                                               
+        statsDclient.increment("transaction.update");
 
         if(transaction_id == null){
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
@@ -78,7 +94,8 @@ public class TransactionController {
     @DeleteMapping("/transact/delete/{transaction_id}")
     public ResponseEntity deleteTransaction(@RequestHeader(value="Authorization") String auth,
                                             @PathVariable(value="transaction_id")String transaction_id){
-
+        
+        statsDclient.increment("transaction.delete");
         if(transaction_id == null){
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }

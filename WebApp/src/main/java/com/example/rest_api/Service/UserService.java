@@ -1,5 +1,16 @@
 package com.example.rest_api.Service;
 
+import com.amazonaws.auth.ClasspathPropertiesFileCredentialsProvider;
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
+import com.amazonaws.regions.Region;
+import com.amazonaws.regions.Regions;
+
+
+import com.amazonaws.services.sns.AmazonSNSClient;
+import com.amazonaws.services.sns.model.ListTopicsResult;
+import com.amazonaws.services.sns.model.PublishRequest;
+import com.amazonaws.services.sns.model.PublishResult;
+import com.amazonaws.services.sns.model.Topic;
 import com.example.rest_api.Dao.UserDao;
 import com.example.rest_api.Entities.User;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -98,6 +109,46 @@ public class UserService {
             }
         }
 
+    }
+
+    public ResponseEntity resetPassword(String emailId){
+
+        if(validateService.validateUsername(emailId)){
+
+            String token = UUID.randomUUID().toString();
+
+            //create a new SNS client and set endpoint
+            AmazonSNSClient snsClient = new AmazonSNSClient(new DefaultAWSCredentialsProviderChain());
+            snsClient.setRegion(Region.getRegion(Regions.US_EAST_1));
+
+            String msg = emailId+","+token;
+
+            ListTopicsResult topicsResult = snsClient.listTopics();
+
+            List<Topic> topics = topicsResult.getTopics();
+
+            String topicName = "";
+
+            Iterator it = topics.iterator();
+
+            while(it.hasNext()){
+                Topic topicNames = (Topic)it.next();
+                if(topicNames.getTopicArn().contains("Sampletopic")) {
+                    topicName = topicNames.getTopicArn();
+                }
+            }
+
+            PublishRequest publishRequest = new PublishRequest(topicName, msg);
+            PublishResult publishResult = snsClient.publish(publishRequest);
+
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body("{\"Response\":\"Check your email for reset password link\"}");
+
+        }
+
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body("{\"Response\":\"Reset failed\"}");
     }
 
     protected boolean authUser(String []userCredentials){
