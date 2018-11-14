@@ -256,16 +256,6 @@
                                 {
                                     "Effect": "Allow",
                                     "Action": [
-                                       "ec2:CreateNetworkInterface",
-                                       "ec2:DescribeNetworkInterfaces",
-                                       "ec2:DetachNetworkInterface",
-                                       "ec2:DeleteNetworkInterface"
-                                    ],
-                                    "Resource": "*"
-                                 },
-                                {
-                                    "Effect": "Allow",
-                                    "Action": [
                                         "dynamodb:*"
                                     ],
                                     "Resource": [
@@ -292,6 +282,11 @@
                                 "s3:List*"
                             ],
                             "Resource": "arn:aws:s3:::*"
+                        },
+                        {
+                            "Effect": "Allow",
+                            "Action": "sns:*",
+                            "Resource": "*"
                         },
                         {
                             "Effect": "Allow",
