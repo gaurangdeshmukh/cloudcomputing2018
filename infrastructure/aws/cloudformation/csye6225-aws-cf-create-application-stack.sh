@@ -146,9 +146,9 @@ echo "Vpc id is: $vpc_Id"
 #====================================================================================================
 
 create=$(aws cloudformation create-stack --stack-name $sn --template-body file://csye6225-cf-application.json --capabilities CAPABILITY_NAMED_IAM \
-  --parameters ParameterKey=KeyName,ParameterValue=$keypair ParameterKey=SubnetId,ParameterValue=$SubnetId ParameterKey=SubnetId1,ParameterValue=$SubnetId1 ParameterKey=SubnetId2,ParameterValue=$SubnetId2 \
+  --parameters ParameterKey=KeyName,ParameterValue=$keypair ParameterKey=SubnetId,ParameterValue=$SubnetId ParameterKey=SubnetId1,ParameterValue=$SubnetId1 \
     ParameterKey=HostedZone,ParameterValue=$HostedZoneName ParameterKey=SSHLocation,ParameterValue=0.0.0.0/0 ParameterKey=VPC,ParameterValue=$vpc_Id \
-    ParameterKey=HashKeyElementName,ParameterValue=EmailId ParameterKey=HashKeyElementName2,ParameterValue=Token ParameterKey=DBUser,ParameterValue=csye6225master \
+    ParameterKey=HashKeyElementName,ParameterValue=EmailId ParameterKey=DBUser,ParameterValue=csye6225master ParameterKey=SubnetId2,ParameterValue=$SubnetId2 \
     ParameterKey=DBInstanceIdentifier,ParameterValue=csye6225-spring2018 ParameterKey=DBName,ParameterValue=csye6225 ParameterKey=Subnetgroupname,ParameterValue=$subname1 \
     ParameterKey=TableName,ParameterValue=csye6225 ParameterKey=S3Bucket,ParameterValue=$HostedZoneName.csye6225.com \
     ParameterKey=InsProfile,ParameterValue=$Profiler ParameterKey=Ec2Name,ParameterValue=$ec2Name ParameterKey=DBPassword,ParameterValue=csye6225password)
