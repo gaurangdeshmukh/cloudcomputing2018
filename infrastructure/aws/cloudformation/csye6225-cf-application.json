@@ -54,14 +54,6 @@
             "MaxLength": "2048",
             "ConstraintDescription": "must contain only alphanumberic characters"
         },
-        "HashKeyElementName2": {
-            "Description": "HashType PrimaryKey Name",
-            "Type": "String",
-            "AllowedPattern": "[a-zA-Z0-9]*",
-            "MinLength": "1",
-            "MaxLength": "2048",
-            "ConstraintDescription": "must contain only alphanumberic characters"
-        },
         "HashKeyElementType": {
             "Description": "HashType PrimaryKey Type",
             "Type": "String",
@@ -334,6 +326,8 @@
                                 "echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.password=csye6225password\"'  >> setenv.sh",
                                 "#systemctl daemon-reload",
                                 "systemctl start amazon-cloudwatch-agent.service",
+                                "systemctl stop amazon-cloudwatch-agent.service",
+                                "systemctl restart amazon-cloudwatch-agent.service",
                                 "systemctl enable tomcat.service",
                                 "systemctl start tomcat.service",
                                 "yum install mariadb mariadb-server -y",
@@ -364,14 +358,6 @@
                         "AttributeType": {
                             "Ref": "HashKeyElementType"
                         }
-                    },
-                    {
-                        "AttributeName": {
-                            "Ref": "HashKeyElementName2"
-                        },
-                        "AttributeType": {
-                            "Ref": "HashKeyElementType"
-                        }
                     }
                 ],
                 "KeySchema": [
@@ -380,12 +366,6 @@
                             "Ref": "HashKeyElementName"
                         },
                         "KeyType": "HASH"
-                    },
-                    {
-                        "AttributeName": {
-                            "Ref": "HashKeyElementName2"
-                        },
-                        "KeyType": "RANGE"
                     }
                 ],
                 "ProvisionedThroughput": {
