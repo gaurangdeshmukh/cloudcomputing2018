@@ -114,39 +114,40 @@ public class UserService {
     public ResponseEntity resetPassword(String emailId){
 
         if(validateService.validateUsername(emailId)){
+             if(authEmail(emailId)) {
+                 String token = UUID.randomUUID().toString();
 
-            String token = UUID.randomUUID().toString();
+                 //create a new SNS client and set endpoint
+                 AmazonSNSClient snsClient = new AmazonSNSClient(new DefaultAWSCredentialsProviderChain());
+                 snsClient.setRegion(Region.getRegion(Regions.US_EAST_1));
 
-            //create a new SNS client and set endpoint
-            AmazonSNSClient snsClient = new AmazonSNSClient(new DefaultAWSCredentialsProviderChain());
-            snsClient.setRegion(Region.getRegion(Regions.US_EAST_1));
+                 String msg = emailId + "," + token;
 
-            String msg = emailId+","+token;
+                 ListTopicsResult topicsResult = snsClient.listTopics();
 
-            ListTopicsResult topicsResult = snsClient.listTopics();
+                 List<Topic> topics = topicsResult.getTopics();
 
-            List<Topic> topics = topicsResult.getTopics();
+                 String topicName = "";
 
-            String topicName = "";
+                 Iterator it = topics.iterator();
 
-            Iterator it = topics.iterator();
+                 while (it.hasNext()) {
+                     Topic topicNames = (Topic) it.next();
+                     if (topicNames.getTopicArn().contains("Sampletopic")) {
+                         topicName = topicNames.getTopicArn();
+                     }
+                 }
 
-            while(it.hasNext()){
-                Topic topicNames = (Topic)it.next();
-                if(topicNames.getTopicArn().contains("Sampletopic")) {
-                    topicName = topicNames.getTopicArn();
-                }
-            }
+                 PublishRequest publishRequest = new PublishRequest(topicName, msg);
+                 PublishResult publishResult = snsClient.publish(publishRequest);
 
-            PublishRequest publishRequest = new PublishRequest(topicName, msg);
-            PublishResult publishResult = snsClient.publish(publishRequest);
-
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body("{\"Response\":\"Check your email for reset password link\"}");
-
+                 return ResponseEntity.status(HttpStatus.OK)
+                         .body("{\"Response\":\"Check your email for reset password link\"}");
+             }else{
+                 return ResponseEntity.status(HttpStatus.OK)
+                         .body("{\"Response\":\"You are not a registered user. Please register\"}");
+             }
         }
-
-
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body("{\"Response\":\"Reset failed\"}");
     }
@@ -161,6 +162,24 @@ public class UserService {
         try{
             User user = optionalUser.get();
             return checkHash(password,user.password);
+
+        }catch (Exception e){
+            return false;
+        }
+
+    }
+
+    protected boolean authEmail(String emailID){
+
+        Optional<User> optionalUser = userDao.findById(emailID);
+
+        try{
+            User user = optionalUser.get();
+            if(user != null){
+                return true;
+            }else{
+                return false;
+            }
 
         }catch (Exception e){
             return false;
