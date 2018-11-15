@@ -26,8 +26,7 @@ public class AuthorizationController {
     ResponseService responseService;
     
     @Autowired
-    StatsDConfig statsDConfig;
-    //StatsDClient statsDClient;
+    StatsDClient statsDClient;
 
     final Logger logger = LoggerFactory.getLogger(AuthorizationController.class);
 
@@ -35,8 +34,7 @@ public class AuthorizationController {
     @RequestMapping(value="/time", method = RequestMethod.GET)
     public ResponseEntity authAndLogin(@RequestHeader(value="Authorization", defaultValue = "NoValueFound")String auth){
         
-        //statsDClient.increment("time.get");
-        statsDConfig.metricsClient().increment("time.get");    
+        statsDClient.increment("time.get");   
         if(auth.isEmpty() || auth.equals("NoValueFound")){
             return responseService.generateResponse(HttpStatus.UNAUTHORIZED,
                     "{\"Response\":\"You are not logged in\"}");
