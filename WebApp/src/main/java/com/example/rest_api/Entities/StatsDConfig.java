@@ -15,8 +15,8 @@ public class StatsDConfig{
     @Bean
     public StatsDClient metricsClient(
                             @Value("${metrics.server.hostname}") String hostname,
-                            @Value("{metrics.server.port}") String port,
-                            @Value("{publish.metrics}") String publish
+                            @Value("{$metrics.server.port}") String port,
+                            @Value("{$publish.metrics}") String publish
     ){
         
         if(publish.equals("true")){
