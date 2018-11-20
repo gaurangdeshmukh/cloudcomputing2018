@@ -175,7 +175,7 @@ public class UserService {
 
         try{
             User user = optionalUser.get();
-            if(user != null){
+            if(!user.getUsername().isEmpty()){
                 return true;
             }else{
                 return false;
