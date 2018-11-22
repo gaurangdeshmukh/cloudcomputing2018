@@ -53,7 +53,7 @@ deploy:
     key: csye6225-web-app-${TRAVIS_JOB_NUMBER}.zip
     bundle_type: zip
     application: $application
-    deployment_group: auto
+    deployment_group: Codedeploy_groupname_autoscalling
     region: us-east-1
     wait-until-deployed: true
     on:
