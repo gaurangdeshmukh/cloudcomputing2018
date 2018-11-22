@@ -44,7 +44,7 @@ deploy:
     secret_access_key: $access_secret_key
     acl: public_read
     on:
-      branch: master
+      branch: assignment07-08
    
   - provider: codedeploy
     access_key_id: $access_key_id
@@ -53,8 +53,8 @@ deploy:
     key: csye6225-web-app-${TRAVIS_JOB_NUMBER}.zip
     bundle_type: zip
     application: $application
-    deployment_group: $deployment_group
+    deployment_group: $deployment_group_for_autoscalling
     region: us-east-1
     wait-until-deployed: true
     on:
-      branch: master
+      branch: assignment07-08
