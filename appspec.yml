@@ -6,10 +6,6 @@ files:
     destination: /opt/tomcat/webapps
 
 hooks:
-  BeforeInstall:
-   - location: ./beforeInstall.sh
-     timeout: 180
-     runas: centos
   AfterInstall:
    - location: ./afterInstall.sh
      timeout: 180
