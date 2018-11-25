@@ -197,7 +197,7 @@ public class UserService {
         Random rand = new Random();
         int log_rounds = rand.nextInt(20);
 
-        return BCrypt.hashpw(password,BCrypt.gensalt(log_rounds));
+        return BCrypt.hashpw(password,BCrypt.gensalt(15));
     }
 
     protected boolean checkHash(String password,String hash){
