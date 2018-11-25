@@ -59,16 +59,3 @@ deploy:
     wait-until-deployed: true
     on:
       branch: master
-      
-  - provider: codedeploy
-    access_key_id: $access_key_id
-    secret_access_key: $access_secret_key
-    bucket: $s3_bucket
-    key: csye6225-web-app-${TRAVIS_JOB_NUMBER}.zip
-    bundle_type: zip
-    application: $application
-    deployment_group: auto
-    region: us-east-1
-    wait-until-deployed: true
-    on:
-      branch: master
