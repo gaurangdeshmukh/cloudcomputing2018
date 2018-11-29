@@ -416,7 +416,7 @@
                 "MetricName": "CPUUtilization",
                 "Namespace": "AWS/EC2",
                 "Statistic": "Average",
-                "Period": "300",
+                "Period": "120",
                 "EvaluationPeriods": "2",
                 "Threshold": "10",
                 "AlarmActions": [
@@ -442,7 +442,7 @@
                 "MetricName": "CPUUtilization",
                 "Namespace": "AWS/EC2",
                 "Statistic": "Average",
-                "Period": "300",
+                "Period": "120",
                 "EvaluationPeriods": "2",
                 "Threshold": "8",
                 "AlarmActions": [
@@ -511,6 +511,26 @@
                 ]
             }
         },
+        "Listenerhttp": {
+            "Type": "AWS::ElasticLoadBalancingV2::Listener",
+            "Properties": {
+                "DefaultActions": [
+				{
+					"Type": "redirect",
+					"RedirectConfig": {
+						"Protocol": "HTTPS",
+						"StatusCode": "HTTP_301",
+						"Port": 443
+					}
+				}
+			],
+                "LoadBalancerArn": {
+                    "Ref": "ElasticLoadBalancer"
+                },
+                "Port": "80",
+                "Protocol": "HTTP"
+            }
+        },
         "TargetGroup": {
             "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
             "Properties": {
@@ -572,16 +592,6 @@
                         "ToPort": "8080",
                         "CidrIp": {
                             "Ref": "SSHLocation"
-                        }
-                    }
-                ],
-                "SecurityGroupEgress": [
-                    {
-                        "IpProtocol": "tcp",
-                        "FromPort": "8080",
-                        "ToPort": "8080",
-                        "DestinationSecurityGroupId": {
-                            "Ref": "SecurityGroupBySG"
                         }
                     }
                 ],
@@ -837,32 +847,32 @@
                         "IpProtocol": "tcp",
                         "FromPort": "22",
                         "ToPort": "22",
-                        "CidrIp": {
-                            "Ref": "SSHLocation"
+                        "SourceSecurityGroupId": {
+                            "Ref":  "LoadBalancerSecurityGroup"
                         }
                     },
                     {
                         "IpProtocol": "tcp",
                         "FromPort": "80",
                         "ToPort": "80",
-                        "CidrIp": {
-                            "Ref": "SSHLocation"
+                        "SourceSecurityGroupId": {
+                            "Ref":  "LoadBalancerSecurityGroup"
                         }
                     },
                     {
                         "IpProtocol": "tcp",
                         "FromPort": "443",
                         "ToPort": "443",
-                        "CidrIp": {
-                            "Ref": "SSHLocation"
+                        "SourceSecurityGroupId": {
+                            "Ref":  "LoadBalancerSecurityGroup"
                         }
                     },
                     {
                         "IpProtocol": "tcp",
                         "FromPort": "8080",
                         "ToPort": "8080",
-                        "CidrIp": {
-                            "Ref": "SSHLocation"
+                        "SourceSecurityGroupId": {
+                            "Ref":  "LoadBalancerSecurityGroup"
                         }
                     }
                 ],
