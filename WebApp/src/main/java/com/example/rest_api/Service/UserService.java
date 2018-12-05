@@ -175,7 +175,7 @@ public class UserService {
 
         try{
             User user = optionalUser.get();
-            if(user != null){
+            if(!user.getUsername().isEmpty()){
                 return true;
             }else{
                 return false;
@@ -197,7 +197,7 @@ public class UserService {
         Random rand = new Random();
         int log_rounds = rand.nextInt(20);
 
-        return BCrypt.hashpw(password,BCrypt.gensalt(log_rounds));
+        return BCrypt.hashpw(password,BCrypt.gensalt(15));
     }
 
     protected boolean checkHash(String password,String hash){
