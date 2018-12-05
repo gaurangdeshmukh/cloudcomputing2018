@@ -515,15 +515,16 @@
             "Type": "AWS::ElasticLoadBalancingV2::Listener",
             "Properties": {
                 "DefaultActions": [
-				{
-					"Type": "redirect",
-					"RedirectConfig": {
-						"Protocol": "HTTPS",
-						"StatusCode": "HTTP_301",
-						"Port": 443
-					}
-				}
-			],
+
+                    {
+                        "Type": "redirect",
+                        "RedirectConfig": {
+                            "Protocol": "HTTPS",
+                            "StatusCode": "HTTP_301",
+                            "Port": 443
+                        }
+                    }
+                ],
                 "LoadBalancerArn": {
                     "Ref": "ElasticLoadBalancer"
                 },
