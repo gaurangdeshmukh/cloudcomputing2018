@@ -275,7 +275,7 @@
                                 "groupadd tomcat",
                                 "useradd -M -s /bin/nologin -g tomcat -d /opt/tomcat tomcat",
                                 "cd /tmp",
-                                "wget http://apache.mirrors.pair.com/tomcat/tomcat-8/v8.5.34/bin/apache-tomcat-8.5.34.tar.gz",
+                                "wget http://ftp.naz.com/apache/tomcat/tomcat-8/v8.5.35/bin/apache-tomcat-8.5.35.tar.gz",
                                 "mkdir /opt/tomcat",
                                 "sudo tar xvf apache-tomcat-8*tar.gz -C /opt/tomcat --strip-components=1",
                                 "cd /opt/tomcat",
@@ -412,12 +412,12 @@
         "CPUAlarmHigh": {
             "Type": "AWS::CloudWatch::Alarm",
             "Properties": {
-                "AlarmDescription": "Scale-up if CPU > 90% for 10 minutes",
+                "AlarmDescription": "Scale-up if CPU > 10% for 10 minutes",
                 "MetricName": "CPUUtilization",
                 "Namespace": "AWS/EC2",
                 "Statistic": "Average",
-                "Period": "300",
-                "EvaluationPeriods": "2",
+                "Period": "120",
+                "EvaluationPeriods": "5",
                 "Threshold": "10",
                 "AlarmActions": [
                     {
@@ -438,12 +438,12 @@
         "CPUAlarmLow": {
             "Type": "AWS::CloudWatch::Alarm",
             "Properties": {
-                "AlarmDescription": "Scale-down if CPU < 70% for 10 minutes",
+                "AlarmDescription": "Scale-down if CPU < 8% for 10 minutes",
                 "MetricName": "CPUUtilization",
                 "Namespace": "AWS/EC2",
                 "Statistic": "Average",
-                "Period": "300",
-                "EvaluationPeriods": "2",
+                "Period": "120",
+                "EvaluationPeriods": "5",
                 "Threshold": "8",
                 "AlarmActions": [
                     {
@@ -511,6 +511,27 @@
                 ]
             }
         },
+        "Listenerhttp": {
+            "Type": "AWS::ElasticLoadBalancingV2::Listener",
+            "Properties": {
+                "DefaultActions": [
+
+                    {
+                        "Type": "redirect",
+                        "RedirectConfig": {
+                            "Protocol": "HTTPS",
+                            "StatusCode": "HTTP_301",
+                            "Port": 443
+                        }
+                    }
+                ],
+                "LoadBalancerArn": {
+                    "Ref": "ElasticLoadBalancer"
+                },
+                "Port": "80",
+                "Protocol": "HTTP"
+            }
+        },
         "TargetGroup": {
             "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
             "Properties": {
@@ -572,16 +593,6 @@
                         "ToPort": "8080",
                         "CidrIp": {
                             "Ref": "SSHLocation"
-                        }
-                    }
-                ],
-                "SecurityGroupEgress": [
-                    {
-                        "IpProtocol": "tcp",
-                        "FromPort": "8080",
-                        "ToPort": "8080",
-                        "DestinationSecurityGroupId": {
-                            "Ref": "SecurityGroupBySG"
                         }
                     }
                 ],
@@ -837,32 +848,32 @@
                         "IpProtocol": "tcp",
                         "FromPort": "22",
                         "ToPort": "22",
-                        "CidrIp": {
-                            "Ref": "SSHLocation"
+                        "SourceSecurityGroupId": {
+                            "Ref":  "LoadBalancerSecurityGroup"
                         }
                     },
                     {
                         "IpProtocol": "tcp",
                         "FromPort": "80",
                         "ToPort": "80",
-                        "CidrIp": {
-                            "Ref": "SSHLocation"
+                        "SourceSecurityGroupId": {
+                            "Ref":  "LoadBalancerSecurityGroup"
                         }
                     },
                     {
                         "IpProtocol": "tcp",
                         "FromPort": "443",
                         "ToPort": "443",
-                        "CidrIp": {
-                            "Ref": "SSHLocation"
+                        "SourceSecurityGroupId": {
+                            "Ref":  "LoadBalancerSecurityGroup"
                         }
                     },
                     {
                         "IpProtocol": "tcp",
                         "FromPort": "8080",
                         "ToPort": "8080",
-                        "CidrIp": {
-                            "Ref": "SSHLocation"
+                        "SourceSecurityGroupId": {
+                            "Ref":  "LoadBalancerSecurityGroup"
                         }
                     }
                 ],
