@@ -1,10 +1,10 @@
 # CSYE6225-Fall2018
 -------------------------------------------------------------------------------------------------------------------------------------------
 ## Team Members: 
-* Deepak Padhi - padhi.d@husky.neu.edu
 * Gaurang Deshmukh - deshmukh.g@husky.neu.edu
-* Shreyas Kalyanaraman - kalyanaraman.s@husky.neu.edu
-* Hardik Chalke - chalke.h@husky.neu.edu
+* Deepak Padhi
+* Shreyas Kalyanaraman 
+* Hardik Chalke 
 -------------------------------------------------------------------------------------------------------------------------------------------
 ## Prerequisites for building and deploying locally
 
@@ -159,11 +159,6 @@ For eg: localhost:8080/transact/2a$04$9S1YyzCM4NRiMDqaV8s9ZeoNe6eCEV3Rn1-THLTqJe
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 ### Added the CI/CD feature
-
-
-
-
-# commit
 
 
 
